@@ -110,6 +110,43 @@
     container.parentNode.replaceChild(card, container);
   }
 
+  function renderMermaidDiagrams() {
+    if (typeof window.mermaid === 'undefined') return;
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    try {
+      window.mermaid.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'dark' : 'default',
+        securityLevel: 'strict'
+      });
+    } catch (e) {
+      // Ignore if already initialized
+    }
+
+    const mermaidBlocks = document.querySelectorAll('pre.mermaid:not(.viewmd-mermaid-rendered)');
+    mermaidBlocks.forEach(async (block, index) => {
+      block.classList.add('viewmd-mermaid-rendered');
+      const source = block.textContent || '';
+      const id = `mermaid-svg-${Date.now()}-${index}`;
+      try {
+        const { svg } = await window.mermaid.render(id, source);
+        const container = document.createElement('div');
+        container.className = 'viewmd-diagram-container';
+        container.innerHTML = svg;
+        block.parentNode.replaceChild(container, block);
+      } catch (err) {
+        const errDiv = document.createElement('div');
+        errDiv.className = 'viewmd-diagram-error';
+        errDiv.innerHTML = `
+          <div class="viewmd-diagram-error-title">Mermaid rendering error</div>
+          <pre class="viewmd-diagram-error-source"><code>${escapeHtml(source)}</code></pre>
+        `;
+        block.parentNode.replaceChild(errDiv, block);
+      }
+    });
+  }
+
   function escapeHtml(str) {
     return str.replace(/[&<>'"]/g, (tag) => ({
       '&': '&amp;',
@@ -138,6 +175,16 @@
       document.documentElement.style.setProperty('--viewmd-code', '#eff1f3');
       document.documentElement.style.setProperty('--viewmd-link', '#0969da');
     }
+
+    if (typeof window.mermaid !== 'undefined') {
+      try {
+        window.mermaid.initialize({
+          theme: isDark ? 'dark' : 'default',
+          securityLevel: 'strict'
+        });
+      } catch (e) {
+      }
+    }
   }
 
   window.addEventListener('message', (event) => {
@@ -154,6 +201,7 @@
   function run() {
     wrapTables();
     enhanceFrontMatter();
+    renderMermaidDiagrams();
   }
 
   if (document.readyState === 'loading') {
@@ -168,6 +216,7 @@
     debounceTimer = setTimeout(() => {
       debounceTimer = null;
       wrapTables();
+      renderMermaidDiagrams();
     }, 50);
   });
 

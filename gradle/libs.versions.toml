@@ -1,5 +1,7 @@
 [versions]
 junit = "4.13.2"
+plantuml = "1.2024.7"
 
 [libraries]
 junit = { module = "junit:junit", version.ref = "junit" }
+plantuml = { module = "net.sourceforge.plantuml:plantuml-mit", version.ref = "plantuml" }

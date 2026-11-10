@@ -56,12 +56,12 @@ Exit gate: G3 passed.
 
 ## Phase 4: Diagrams and rich content
 
-- [ ] Mermaid bundled, theme-aware, strict security level, error boxes (R-DIA-1, 3, 4).
-- [ ] PlantUML per the Phase 0 decision with cache, timeout, off-EDT (R-DIA-2, 3, 4).
-- [ ] Code fence highlighting and copy button, alerts, task lists, footnotes, math (R-DIA-5..7).
-- [ ] Sanitiser and CSP hardened with tests for XSS payload fixtures (R-NFR-2).
+- [x] Mermaid bundled, theme-aware, strict security level, error boxes (R-DIA-1, 3, 4).
+- [x] PlantUML per the Phase 0 decision with cache, timeout, off-EDT (R-DIA-2, 3, 4).
+- [x] Code fence highlighting and copy button, alerts, task lists, footnotes, math (R-DIA-5..7).
+- [x] Sanitiser and CSP hardened with tests for XSS payload fixtures (R-NFR-2).
 
-Exit gate: G4.
+Exit gate: G4 passed.
 
 ## Phase 5: Navigation, export, polish
 

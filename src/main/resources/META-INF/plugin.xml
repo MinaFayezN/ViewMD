@@ -24,5 +24,7 @@
 
     <extensions defaultExtensionNs="org.intellij.markdown">
         <browserPreviewExtensionProvider implementation="dev.mina.viewmd.extensions.ViewMdBrowserPreviewExtension$Provider" />
+        <fenceGeneratingProvider implementation="dev.mina.viewmd.diagram.MermaidCodeFenceGeneratingProvider" order="first" />
+        <fenceGeneratingProvider implementation="dev.mina.viewmd.diagram.PlantUmlCodeFenceGeneratingProvider" order="first" />
     </extensions>
 </idea-plugin>

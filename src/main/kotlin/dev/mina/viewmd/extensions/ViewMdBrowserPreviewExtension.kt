@@ -13,12 +13,14 @@ class ViewMdBrowserPreviewExtension(
     private val panel: MarkdownHtmlPanel
 ) : MarkdownBrowserPreviewExtension, Disposable {
 
-    override val scripts: List<String> = listOf("web/postprocess.js")
+    override val scripts: List<String> = listOf("web/vendor/mermaid.min.js", "web/postprocess.js")
     override val styles: List<String> = listOf("web/viewmd.css")
 
     override val resourceProvider: ResourceProvider = object : ResourceProvider {
         override fun canProvide(resourceName: String): Boolean {
-            return resourceName == "web/viewmd.css" || resourceName == "web/postprocess.js"
+            return resourceName == "web/viewmd.css" ||
+                   resourceName == "web/postprocess.js" ||
+                   resourceName == "web/vendor/mermaid.min.js"
         }
 
         override fun loadResource(resourceName: String): ResourceProvider.Resource? {

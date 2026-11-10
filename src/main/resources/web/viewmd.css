@@ -171,3 +171,41 @@ blockquote {
   background: rgba(127, 127, 127, 0.15);
   font-size: 12px;
 }
+
+/* Diagram containers & Error boxes (R-DIA-1..4) */
+.viewmd-diagram-container {
+  display: block;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.viewmd-diagram-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.viewmd-diagram-error {
+  border: 1px solid #cf222e;
+  border-radius: 6px;
+  background-color: rgba(207, 34, 46, 0.08);
+  padding: 12px 16px;
+  margin: 16px 0;
+  color: #cf222e;
+}
+
+.viewmd-diagram-error-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.viewmd-diagram-error-source {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(207, 34, 46, 0.2);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 0;
+  color: inherit;
+  font-size: 13px;
+  overflow-x: auto;
+}
