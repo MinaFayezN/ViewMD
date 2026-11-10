@@ -13,6 +13,22 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.plugins.markdown</depends>
 
+    <actions>
+        <group id="ViewMD.ActionsGroup" text="ViewMD" popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="last" />
+            <action
+                id="dev.mina.viewmd.actions.OpenInBrowserAction"
+                class="dev.mina.viewmd.actions.OpenInBrowserAction"
+                text="Open Preview in Browser"
+                description="Open ViewMD preview in the external browser" />
+            <action
+                id="dev.mina.viewmd.actions.ExportHtmlAction"
+                class="dev.mina.viewmd.actions.ExportHtmlAction"
+                text="Export as HTML..."
+                description="Export standalone ViewMD HTML document" />
+        </group>
+    </actions>
+
     <extensions defaultExtensionNs="com.intellij">
         <projectConfigurable
             parentId="tools"

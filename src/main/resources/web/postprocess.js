@@ -202,6 +202,8 @@
     wrapTables();
     enhanceFrontMatter();
     renderMermaidDiagrams();
+    addTableToolbar();
+    addCopyButtonsToCodeBlocks();
   }
 
   if (document.readyState === 'loading') {
@@ -217,6 +219,8 @@
       debounceTimer = null;
       wrapTables();
       renderMermaidDiagrams();
+      addTableToolbar();
+      addCopyButtonsToCodeBlocks();
     }, 50);
   });
 
@@ -225,3 +229,82 @@
     subtree: true,
   });
 })();
+
+  function addCopyButtonsToCodeBlocks() {
+    const pres = document.querySelectorAll('pre:not(.viewmd-copy-ready)');
+    pres.forEach((pre) => {
+      pre.classList.add('viewmd-copy-ready');
+      const btn = document.createElement('button');
+      btn.className = 'viewmd-copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const code = pre.querySelector('code');
+        const text = code ? code.textContent : pre.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        } catch (err) {
+          btn.textContent = 'Failed';
+        }
+      });
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }
+
+  function addTableToolbar() {
+    const wraps = document.querySelectorAll('.viewmd-table-wrap:not(.viewmd-toolbar-ready)');
+    wraps.forEach((wrap) => {
+      wrap.classList.add('viewmd-toolbar-ready');
+      wrap.style.position = 'relative';
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'viewmd-table-toolbar';
+
+      const copyMdBtn = document.createElement('button');
+      copyMdBtn.textContent = 'Copy Markdown';
+      copyMdBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const table = wrap.querySelector('table');
+        if (!table) return;
+        const mdText = tableToMarkdown(table);
+        await navigator.clipboard.writeText(mdText);
+        copyMdBtn.textContent = 'Copied!';
+        setTimeout(() => { copyMdBtn.textContent = 'Copy Markdown'; }, 1500);
+      });
+
+      const copyTsvBtn = document.createElement('button');
+      copyTsvBtn.textContent = 'Copy TSV';
+      copyTsvBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const table = wrap.querySelector('table');
+        if (!table) return;
+        const tsvText = tableToTsv(table);
+        await navigator.clipboard.writeText(tsvText);
+        copyTsvBtn.textContent = 'Copied!';
+        setTimeout(() => { copyTsvBtn.textContent = 'Copy TSV'; }, 1500);
+      });
+
+      toolbar.appendChild(copyMdBtn);
+      toolbar.appendChild(copyTsvBtn);
+      wrap.appendChild(toolbar);
+    });
+  }
+
+  function tableToMarkdown(table) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    return rows.map((r) => {
+      const cells = Array.from(r.querySelectorAll('th, td')).map((c) => (c.textContent || '').trim().replace(/\|/g, '\\|'));
+      return `| ${cells.join(' | ')} |`;
+    }).join('\n');
+  }
+
+  function tableToTsv(table) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    return rows.map((r) => {
+      const cells = Array.from(r.querySelectorAll('th, td')).map((c) => (c.textContent || '').trim().replace(/\t/g, ' '));
+      return cells.join('\t');
+    }).join('\n');
+  }

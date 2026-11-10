@@ -65,12 +65,12 @@ Exit gate: G4 passed.
 
 ## Phase 5: Navigation, export, polish
 
-- [ ] Heading anchors and TOC panel (R-LAY-5, 6); find in preview, zoom, print (R-ED-5).
-- [ ] Open in Browser and Export HTML (R-EXP-1, 2); PDF if time allows (R-EXP-3).
-- [ ] Table toolbar: expand, copy Markdown/TSV, optional sticky first column (R-TBL-5, 6).
-- [ ] Accessibility pass (R-NFR-5); plugin icon, branding, screenshots.
+- [x] Heading anchors and TOC panel (R-LAY-5, 6); find in preview, zoom, print (R-ED-5).
+- [x] Open in Browser and Export HTML (R-EXP-1, 2); PDF if time allows (R-EXP-3).
+- [x] Table toolbar: expand, copy Markdown/TSV, optional sticky first column (R-TBL-5, 6).
+- [x] Accessibility pass (R-NFR-5); plugin icon, branding, screenshots.
 
-Exit gate: G5.
+Exit gate: G5 passed.
 
 ## Phase 6: Hardening, docs, release candidate
 
