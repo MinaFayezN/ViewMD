@@ -1,11 +1,17 @@
 package dev.mina.viewmd.extensions
 
+import com.intellij.ide.ui.LafManager
+import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.util.Disposer
 import org.intellij.plugins.markdown.extensions.MarkdownBrowserPreviewExtension
 import org.intellij.plugins.markdown.ui.preview.MarkdownHtmlPanel
 import org.intellij.plugins.markdown.ui.preview.ResourceProvider
 
-class ViewMdBrowserPreviewExtension : MarkdownBrowserPreviewExtension {
+class ViewMdBrowserPreviewExtension(
+    private val panel: MarkdownHtmlPanel
+) : MarkdownBrowserPreviewExtension, Disposable {
 
     override val scripts: List<String> = listOf("web/postprocess.js")
     override val styles: List<String> = listOf("web/viewmd.css")
@@ -24,12 +30,36 @@ class ViewMdBrowserPreviewExtension : MarkdownBrowserPreviewExtension {
         }
     }
 
+    private val connection = ApplicationManager.getApplication().messageBus.connect(this)
+
+    init {
+        // R-LAY-3: Live theme switching without reopening the file
+        connection.subscribe(LafManagerListener.TOPIC, LafManagerListener {
+            val isDark = isCurrentThemeDark()
+            notifyThemeChanged(isDark)
+        })
+    }
+
+    private fun isCurrentThemeDark(): Boolean {
+        val theme = LafManager.getInstance().currentUIThemeLookAndFeel
+        return theme?.isDark ?: false
+    }
+
+    private fun notifyThemeChanged(isDark: Boolean) {
+        val pipe = panel.browserPipe ?: return
+        val json = """{"type":"THEME_CHANGED","isDark":$isDark}"""
+        pipe.send("viewmd:event", json)
+    }
+
     override fun dispose() {
+        // Automatically cleaned up by Disposer
     }
 
     class Provider : MarkdownBrowserPreviewExtension.Provider {
         override fun createBrowserExtension(panel: MarkdownHtmlPanel): MarkdownBrowserPreviewExtension {
-            return ViewMdBrowserPreviewExtension()
+            val extension = ViewMdBrowserPreviewExtension(panel)
+            Disposer.register(panel, extension)
+            return extension
         }
     }
 }

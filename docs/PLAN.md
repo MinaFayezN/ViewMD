@@ -37,12 +37,12 @@ Exit gate: G1 passed.
 
 ## Phase 2: Editor integration and update pipeline
 
-- [ ] Split editor / preview wiring (R-ED-1), debounce updates (R-ED-3), scroll position preservation.
-- [ ] Scroll sync both directions without feedback loops (R-ED-2).
-- [ ] Links and images (R-ED-4), theme live switching (R-LAY-3), disposers and dynamic unload (R-NFR-4).
-- [ ] Performance harness: 200 KB and 1 MB docs (R-NFR-3).
+- [x] Split editor / preview wiring (R-ED-1), debounce updates (R-ED-3), scroll position preservation.
+- [x] Scroll sync both directions without feedback loops (R-ED-2).
+- [x] Links and images (R-ED-4), theme live switching (R-LAY-3), disposers and dynamic unload (R-NFR-4).
+- [x] Performance harness: 200 KB and 1 MB docs (R-NFR-3).
 
-Exit gate: G2.
+Exit gate: G2 passed.
 
 ## Phase 3: Front matter, settings and custom CSS
 

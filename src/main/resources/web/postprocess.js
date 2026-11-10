@@ -3,21 +3,24 @@
 
   function wrapTables() {
     const tables = document.querySelectorAll('table:not(.viewmd-wrapped)');
-    tables.forEach((table) => {
-      if (table.parentElement && table.parentElement.classList.contains('viewmd-table-wrap')) {
+    if (tables.length === 0) return;
+
+    for (let i = 0; i < tables.length; i++) {
+      const table = tables[i];
+      const parent = table.parentElement;
+      if (parent && parent.classList.contains('viewmd-table-wrap')) {
         table.classList.add('viewmd-wrapped');
-        return;
+        continue;
       }
       const wrap = document.createElement('div');
       wrap.className = 'viewmd-table-wrap';
-      table.parentNode.insertBefore(wrap, table);
+      parent.insertBefore(wrap, table);
       wrap.appendChild(table);
       table.classList.add('viewmd-wrapped');
-    });
+    }
   }
 
   function enhanceFrontMatter() {
-    // If stock markdown rendered frontmatter as details.fm or pre block
     const detailsFm = document.querySelector('details.fm:not(.viewmd-fm-processed)');
     if (detailsFm) {
       detailsFm.classList.add('viewmd-fm-processed');
@@ -26,7 +29,8 @@
     }
 
     const preBlocks = document.querySelectorAll('pre > code');
-    for (const code of preBlocks) {
+    for (let i = 0; i < Math.min(preBlocks.length, 3); i++) {
+      const code = preBlocks[i];
       const text = (code.textContent || '').trim();
       if (text.startsWith('summary:') || (text.startsWith('---') && text.includes('summary:'))) {
         const pre = code.parentElement;
@@ -116,6 +120,37 @@
     }[tag] || tag));
   }
 
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.style.setProperty('--viewmd-fg', '#e6edf3');
+      document.documentElement.style.setProperty('--viewmd-bg', '#0d1117');
+      document.documentElement.style.setProperty('--viewmd-soft', '#151b23');
+      document.documentElement.style.setProperty('--viewmd-line', '#3d444d');
+      document.documentElement.style.setProperty('--viewmd-code', '#262c36');
+      document.documentElement.style.setProperty('--viewmd-link', '#4493f8');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.style.setProperty('--viewmd-fg', '#1f2328');
+      document.documentElement.style.setProperty('--viewmd-bg', '#ffffff');
+      document.documentElement.style.setProperty('--viewmd-soft', '#f6f8fa');
+      document.documentElement.style.setProperty('--viewmd-line', '#d1d9e0');
+      document.documentElement.style.setProperty('--viewmd-code', '#eff1f3');
+      document.documentElement.style.setProperty('--viewmd-link', '#0969da');
+    }
+  }
+
+  window.addEventListener('message', (event) => {
+    if (!event.data) return;
+    try {
+      const payload = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      if (payload.type === 'THEME_CHANGED') {
+        applyTheme(payload.isDark);
+      }
+    } catch (e) {
+    }
+  });
+
   function run() {
     wrapTables();
     enhanceFrontMatter();
@@ -127,9 +162,13 @@
     run();
   }
 
+  let debounceTimer = null;
   const observer = new MutationObserver(() => {
-    wrapTables();
-    enhanceFrontMatter();
+    if (debounceTimer) return;
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      wrapTables();
+    }, 50);
   });
 
   observer.observe(document.body || document.documentElement, {
