@@ -7,21 +7,21 @@ owner with 2-3 options and a recommendation. Requirement IDs are from `docs/REQU
 
 Goal: prove the build, then choose Approach A or B with evidence.
 
-- [ ] Confirm environment facts (JDK 27 install, Gradle wrapper version, Kotlin 2.4.0 + JDK 27 support, target IDE
+- [x] Confirm environment facts (JDK 27 install, Gradle wrapper version, Kotlin 2.4.0 + JDK 27 support, target IDE
       build numbers, IDE JBR Java version, Android Studio install path). Table in `docs/adr/0001-toolchain.md`.
-- [ ] `./gradlew buildPlugin` and `./gradlew runIde` on the untouched template.
-- [ ] Add `bundledPlugin("org.intellij.plugins.markdown")` and `<depends>org.intellij.plugins.markdown</depends>`; list
+- [x] `./gradlew buildPlugin` and `./gradlew runIde` on the untouched template.
+- [x] Add `bundledPlugin("org.intellij.plugins.markdown")` and `<depends>org.intellij.plugins.markdown</depends>`; list
       the extension points the bundled Markdown plugin exposes in the target IDE (read its `plugin.xml` and jar).
-- [ ] Spike A: through those extension points, inject a script and stylesheet into the stock preview; wrap one table in a
+- [x] Spike A: through those extension points, inject a script and stylesheet into the stock preview; wrap one table in a
       scroll container; move front matter into a card. Record what is and is not possible.
-- [ ] Spike A2: reproduce "custom CSS not found" in Android Studio's stock settings; find the cause (path form, VFS
+- [x] Spike A2: reproduce "custom CSS not found" in Android Studio's stock settings; find the cause (path form, VFS
       refresh, project vs global) and record it. This informs R-CSS.
-- [ ] Spike B: minimal JCEF editor showing static HTML and receiving a JS bridge message. Estimate scroll-sync cost.
-- [ ] Spike C: PlantUML rendering options: bundled jar in-process (license, size, Graphviz dependency, headless
+- [x] Spike B: minimal JCEF editor showing static HTML and receiving a JS bridge message. Estimate scroll-sync cost.
+- [x] Spike C: PlantUML rendering options: bundled jar in-process (license, size, Graphviz dependency, headless
       safety) vs. delegating to the IDE PlantUML plugin. Mermaid: bundle the official dist, confirm it runs in JCEF.
-- [ ] `DECISION` A vs B, PlantUML engine, minimum supported IDE builds. Write ADRs 0002-0004.
+- [x] `DECISION` A vs B, PlantUML engine, minimum supported IDE builds. Write ADRs 0002-0004.
 
-Exit gate: G0.
+Exit gate: G0 passed.
 
 ## Phase 1: Web layer and tables (the core fix)
 
