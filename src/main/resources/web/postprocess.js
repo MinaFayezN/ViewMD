@@ -158,23 +158,36 @@
   }
 
   function applyTheme(isDark) {
+    const root = document.documentElement;
     if (isDark) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.documentElement.style.setProperty('--viewmd-fg', '#e6edf3');
-      document.documentElement.style.setProperty('--viewmd-bg', '#0d1117');
-      document.documentElement.style.setProperty('--viewmd-soft', '#151b23');
-      document.documentElement.style.setProperty('--viewmd-line', '#3d444d');
-      document.documentElement.style.setProperty('--viewmd-code', '#262c36');
-      document.documentElement.style.setProperty('--viewmd-link', '#4493f8');
+      root.setAttribute('data-theme', 'dark');
+      root.style.setProperty('color-scheme', 'dark');
+      root.style.setProperty('--viewmd-fg', '#e6edf3');
+      root.style.setProperty('--viewmd-bg', '#0d1117');
+      root.style.setProperty('--viewmd-soft', '#161b22');
+      root.style.setProperty('--viewmd-line', '#3d444d');
+      root.style.setProperty('--viewmd-code', '#21262d');
+      root.style.setProperty('--viewmd-link', '#4493f8');
+      root.style.setProperty('--viewmd-table-border', '#30363d');
+      root.style.setProperty('--viewmd-table-stripe', '#161b22');
     } else {
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.documentElement.style.setProperty('--viewmd-fg', '#1f2328');
-      document.documentElement.style.setProperty('--viewmd-bg', '#ffffff');
-      document.documentElement.style.setProperty('--viewmd-soft', '#f6f8fa');
-      document.documentElement.style.setProperty('--viewmd-line', '#d1d9e0');
-      document.documentElement.style.setProperty('--viewmd-code', '#eff1f3');
-      document.documentElement.style.setProperty('--viewmd-link', '#0969da');
+      root.setAttribute('data-theme', 'light');
+      root.style.setProperty('color-scheme', 'light');
+      root.style.setProperty('--viewmd-fg', '#1f2328');
+      root.style.setProperty('--viewmd-bg', '#ffffff');
+      root.style.setProperty('--viewmd-soft', '#f6f8fa');
+      root.style.setProperty('--viewmd-line', '#d1d9e0');
+      root.style.setProperty('--viewmd-code', '#eff1f3');
+      root.style.setProperty('--viewmd-link', '#0969da');
+      root.style.setProperty('--viewmd-table-border', '#d1d9e0');
+      root.style.setProperty('--viewmd-table-stripe', '#f6f8fa');
     }
+
+    const toggleBtn = document.getElementById('viewmd-theme-toggle');
+    const toggleIcon = document.getElementById('viewmd-theme-icon');
+    const toggleText = document.getElementById('viewmd-theme-text');
+    if (toggleIcon) toggleIcon.textContent = isDark ? '☀️' : '🌙';
+    if (toggleText) toggleText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
 
     if (typeof window.mermaid !== 'undefined') {
       try {
@@ -185,6 +198,30 @@
       } catch (e) {
       }
     }
+  }
+
+  function initThemeToggle() {
+    const toggleBtn = document.getElementById('viewmd-theme-toggle');
+    if (!toggleBtn || toggleBtn.classList.contains('viewmd-toggle-initialized')) return;
+    toggleBtn.classList.add('viewmd-toggle-initialized');
+
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newIsDark = currentTheme !== 'dark';
+      applyTheme(newIsDark);
+      try {
+        localStorage.setItem('viewmd-theme', newIsDark ? 'dark' : 'light');
+      } catch (err) {}
+    });
+
+    // Check localStorage preference on load in browser
+    try {
+      const savedTheme = localStorage.getItem('viewmd-theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        applyTheme(savedTheme === 'dark');
+      }
+    } catch (err) {}
   }
 
 let customStyleEl = null;
@@ -274,6 +311,7 @@ let customStyleEl = null;
   }
 
   function run() {
+    initThemeToggle();
     wrapTables();
     enhanceFrontMatter();
     renderMermaidDiagrams();
@@ -292,7 +330,8 @@ let customStyleEl = null;
     if (debounceTimer) return;
     debounceTimer = setTimeout(() => {
       debounceTimer = null;
-      wrapTables();
+      initThemeToggle();
+    wrapTables();
       renderMermaidDiagrams();
       addTableToolbar();
       addCopyButtonsToCodeBlocks();

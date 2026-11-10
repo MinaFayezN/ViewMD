@@ -1,6 +1,7 @@
 package dev.mina.viewmd.actions
 
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.ui.LafManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -21,10 +22,12 @@ class OpenInBrowserAction : AnAction("Open Preview in Browser", "Open full ViewM
             val rawMarkdown = document.text
             // Convert markdown source into HTML using the platform MarkdownUtil
             val renderedBody = MarkdownUtil.generateMarkdownHtml(virtualFile, rawMarkdown, project)
+            val isDark = LafManager.getInstance().currentUIThemeLookAndFeel?.isDark ?: false
             val tempPath = HtmlExporter.exportToTempFile(
                 title = title,
                 bodyHtml = renderedBody,
-                project = project
+                project = project,
+                isDark = isDark
             )
             BrowserUtil.browse(tempPath.toFile())
         } catch (ex: Exception) {

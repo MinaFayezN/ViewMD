@@ -52,4 +52,21 @@ class HtmlExporterTest {
 
         Files.deleteIfExists(tempPath)
     }
+
+    @Test
+    fun testGenerateStandaloneHtmlContainsThemeToggleAndSanitizesBody() {
+        val html = HtmlExporter.generateStandaloneHtml(
+            title = "Theme Test",
+            bodyHtml = "<body><h1>Nested Body Title</h1></body>",
+            project = null,
+            isDark = true
+        )
+
+        assertTrue(html.contains("data-theme=\"dark\""))
+        assertTrue(html.contains("viewmd-theme-toggle"))
+        assertTrue(html.contains("Nested Body Title"))
+        // Check body unnesting: only one body open tag in the entire document
+        val bodyCount = Regex("<body[^>]*>", RegexOption.IGNORE_CASE).findAll(html).count()
+        assertEquals(1, bodyCount)
+    }
 }
