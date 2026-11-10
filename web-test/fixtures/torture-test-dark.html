@@ -1,0 +1,644 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ViewMD Torture Test - dark</title>
+  <style>/* ViewMD baseline styles & table layout */
+:root {
+  color-scheme: light dark;
+  --viewmd-fg: #1f2328;
+  --viewmd-bg: #ffffff;
+  --viewmd-muted: #59636e;
+  --viewmd-line: #d1d9e0;
+  --viewmd-soft: #f6f8fa;
+  --viewmd-code: #eff1f3;
+  --viewmd-link: #0969da;
+  --viewmd-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --viewmd-font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --viewmd-col-min: 12ch;
+  --viewmd-col-first-min: 14ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --viewmd-fg: #e6edf3;
+    --viewmd-bg: #0d1117;
+    --viewmd-muted: #9198a1;
+    --viewmd-line: #3d444d;
+    --viewmd-soft: #151b23;
+    --viewmd-code: #262c36;
+    --viewmd-link: #4493f8;
+  }
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* Page baseline per R-LAY-1, 2 */
+body {
+  color: var(--viewmd-fg, inherit);
+  font-family: var(--viewmd-font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 auto;
+  padding: 24px 32px 80px;
+  max-width: var(--viewmd-max-width, 1400px);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+p, li, blockquote {
+  overflow-wrap: anywhere;
+}
+
+/* Typography per R-LAY-2 */
+h1, h2 {
+  border-bottom: 1px solid var(--viewmd-line);
+  padding-bottom: 0.3em;
+}
+
+code {
+  background: var(--viewmd-code);
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-family: var(--viewmd-font-mono);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  background: var(--viewmd-soft);
+  border: 1px solid var(--viewmd-line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  overflow-wrap: normal;
+}
+
+blockquote {
+  margin-left: 0;
+  padding: 0 1em;
+  color: var(--viewmd-muted);
+  border-left: 0.25em solid var(--viewmd-line);
+}
+
+/* Horizontal scroll container for tables (R-TBL-1..4, 8) */
+.viewmd-table-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.viewmd-table-wrap > table {
+  display: table;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  border-spacing: 0;
+  margin: 0;
+}
+
+.viewmd-table-wrap th,
+.viewmd-table-wrap td {
+  min-width: var(--viewmd-col-min);
+  max-width: 65ch;
+  padding: 8px 14px;
+  vertical-align: top;
+  overflow-wrap: break-word;
+  border: 1px solid var(--viewmd-line);
+}
+
+.viewmd-table-wrap th:first-child,
+.viewmd-table-wrap td:first-child {
+  min-width: var(--viewmd-col-first-min);
+}
+
+.viewmd-table-wrap td code,
+.viewmd-table-wrap td a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.viewmd-table-wrap th {
+  font-weight: 600;
+  background: var(--viewmd-soft);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.viewmd-table-wrap tbody tr:nth-child(even) {
+  background-color: var(--viewmd-soft);
+}
+
+/* Front matter card (R-FM-1..4) */
+.viewmd-frontmatter-card {
+  border: 1px solid var(--viewmd-line);
+  border-radius: 6px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  background-color: var(--viewmd-soft);
+  font-size: 13.5px;
+  color: var(--viewmd-muted);
+}
+
+.viewmd-frontmatter-header {
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viewmd-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.15);
+  font-size: 12px;
+}
+</style>
+  <style>:root { color-scheme: dark !important; --viewmd-fg:#e6edf3; --viewmd-bg:#0d1117; --viewmd-muted:#9198a1; --viewmd-line:#3d444d; --viewmd-soft:#151b23; --viewmd-code:#262c36; --viewmd-link:#4493f8; } html, body { background: #0d1117 !important; color: #e6edf3 !important; }</style>
+</head>
+<body>
+  <pre class="frontmatter"><code>---
+summary: "ViewMD rendering fixture: wide and narrow tables, front matter, diagrams, alerts, code, math and edge cases"
+triggers: [testing ViewMD rendering, reproducing a table squeeze bug, checking dark mode or diagrams]
+index: false
+---</code></pre>
+  <h1>ViewMD torture test</h1>
+<p>Open this file in every phase. Resize the window to 400, 900 and 1600 px and switch light/dark. Each section says what
+&quot;correct&quot; looks like.</p>
+<h2>1. Wide table (12 columns, long text)</h2>
+<p>Correct: scrolls horizontally inside the table, header stays visible, no column narrower than ~12 characters, no
+letter-per-line wrapping.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Area</th>
+<th>Requirement</th>
+<th>Owner</th>
+<th>Status</th>
+<th>Priority</th>
+<th>Ticket</th>
+<th>Risk</th>
+<th>Evidence</th>
+<th>Notes</th>
+<th>Last update</th>
+<th>Next step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R-001</td>
+<td>Tables</td>
+<td>Wide tables scroll horizontally instead of squeezing columns into one-letter lines</td>
+<td>Mina</td>
+<td>In progress</td>
+<td>P0</td>
+<td>TM-19602</td>
+<td>Medium: depends on CSS specificity in the stock preview</td>
+<td><code>docs/images/baseline/wide-900.png</code></td>
+<td>Verified in Android Studio 2026.2.2 sandbox with a 12 column fixture and a long paragraph in every cell to force wrapping</td>
+<td>2026-11-10</td>
+<td>Add the sticky header and capture the 400 px screenshot</td>
+</tr>
+<tr>
+<td>R-002</td>
+<td>Front matter</td>
+<td>Render <code>summary</code> as text and <code>triggers</code> as chips in a collapsed card</td>
+<td>Mina</td>
+<td>Not started</td>
+<td>P0</td>
+<td>TM-19603</td>
+<td>Low</td>
+<td>n/a</td>
+<td>Invalid YAML must show a warning and still render the body</td>
+<td>2026-11-10</td>
+<td>Write the parser spike</td>
+</tr>
+<tr>
+<td>R-003</td>
+<td>Diagrams</td>
+<td>Mermaid and PlantUML render offline</td>
+<td>Mina</td>
+<td>Not started</td>
+<td>P0</td>
+<td>TM-19604</td>
+<td>High: PlantUML may need Graphviz</td>
+<td>n/a</td>
+<td>Compare in-process jar vs the IDE plugin</td>
+<td>2026-11-10</td>
+<td>Spike C</td>
+</tr>
+</tbody>
+</table>
+<h2>2. Narrow table</h2>
+<p>Correct: natural width, not stretched to the full content width.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>1</td>
+</tr>
+<tr>
+<td>b</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Alignment, inline code, links, escaped pipes, line breaks</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Left</th>
+<th style="text-align:center">Center</th>
+<th style="text-align:right">Right</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>inline code</code></td>
+<td style="text-align:center"><a href="https://example.com">a link</a></td>
+<td style="text-align:right">1,234.50</td>
+</tr>
+<tr>
+<td style="text-align:left">escaped | pipe</td>
+<td style="text-align:center">line<br>break</td>
+<td style="text-align:right"><strong>bold</strong> and <em>italic</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>a | b</code> in code</td>
+<td style="text-align:center"><s>strike</s></td>
+<td style="text-align:right">99%</td>
+</tr>
+</tbody>
+</table>
+<h2>4. Long unbreakable tokens in cells</h2>
+<p>Correct: tokens wrap inside the cell (<code>overflow-wrap:anywhere</code>) and never push the table wider than it should be.</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URL</td>
+<td><a href="https://thrivemarket.atlassian.net/wiki/spaces/TECH/pages/4888788998/Prism+Architecture+Design+Reference?focusedCommentId=123456789">https://thrivemarket.atlassian.net/wiki/spaces/TECH/pages/4888788998/Prism+Architecture+Design+Reference?focusedCommentId=123456789</a></td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td>3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b</td>
+</tr>
+<tr>
+<td>Path</td>
+<td>thrive-market-app/app/src/main/java/com/thrivemarket/app/feature/checkout/presentation/viewmodel/CheckoutViewModel.kt</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Table with many short columns (20)</h2>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+<th>c</th>
+<th>d</th>
+<th>e</th>
+<th>f</th>
+<th>g</th>
+<th>h</th>
+<th>i</th>
+<th>j</th>
+<th>k</th>
+<th>l</th>
+<th>m</th>
+<th>n</th>
+<th>o</th>
+<th>p</th>
+<th>q</th>
+<th>r</th>
+<th>s</th>
+<th>t</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>11</td>
+<td>12</td>
+<td>13</td>
+<td>14</td>
+<td>15</td>
+<td>16</td>
+<td>17</td>
+<td>18</td>
+<td>19</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<h2>6. Mermaid</h2>
+<pre><code class="language-mermaid">flowchart LR
+  A[Markdown file] --&gt; B{Front matter?}
+  B -- yes --&gt; C[Card]
+  B -- no --&gt; D[Body]
+  C --&gt; D
+  D --&gt; E[Tables scroll]
+</code></pre>
+<pre><code class="language-mermaid">sequenceDiagram
+  participant U as User
+  participant P as Preview
+  U-&gt;&gt;P: resize window
+  P--&gt;&gt;U: tables reflow, scroll stays
+</code></pre>
+<h2>7. PlantUML</h2>
+<pre><code class="language-plantuml">@startuml
+actor User
+User -&gt; ViewMD : open README.md
+ViewMD -&gt; ViewMD : render offline
+ViewMD --&gt; User : preview
+@enduml
+</code></pre>
+<p>An intentionally broken one (must show an error box plus the source, no crash):</p>
+<pre><code class="language-plantuml">@startuml
+this is not valid -&gt;-&gt; plantuml
+</code></pre>
+<h2>8. Alerts, task lists, footnotes, details</h2>
+<blockquote>
+<p>[!NOTE]
+Useful information.</p>
+</blockquote>
+<blockquote>
+<p>[!WARNING]
+Urgent info that needs attention.</p>
+</blockquote>
+<ul>
+<li>[x] done item</li>
+<li>[ ] open item
+<ul>
+<li>[ ] nested open item</li>
+</ul>
+</li>
+</ul>
+<p>Footnote reference.[^1]</p>
+<p>[^1]: The footnote text.</p>
+<details>
+<summary>Click to expand</summary>
+<p>Hidden <strong>markdown</strong> content with a table:</p>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</details>
+<h2>9. Code</h2>
+<pre><code class="language-kotlin">data class FeatureUiState(val isLoading: Boolean, val errorMessage: String?)
+</code></pre>
+<pre><code class="language-diff">- old line
++ new line
+</code></pre>
+<pre><code class="language-bash">./gradlew :app:testDebugUnitTest --tests &quot;com.thrivemarket.app.feature.ClassNameTest&quot;
+</code></pre>
+<p>A very long single line in a fence must scroll inside the block, not the page:</p>
+<pre><code class="language-text">this_is_a_very_long_line_without_any_spaces_to_check_that_code_blocks_scroll_horizontally_and_do_not_widen_the_page_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789
+</code></pre>
+<h2>10. Math</h2>
+<p>Inline $E = mc^2$ and block:</p>
+<p>$$
+\int_0^\infty e^{-x^2},dx = \frac{\sqrt{\pi}}{2}
+$$</p>
+<h2>11. Links and images</h2>
+<ul>
+<li>Relative file link: <a href="../PLAN.md#phase-1-web-layer-and-tables-the-core-fix">the plan</a></li>
+<li>In-page anchor: <a href="#viewmd-torture-test">back to the top</a></li>
+<li>External: <a href="https://www.jetbrains.com">JetBrains</a></li>
+<li>Relative image (add one under <code>docs/images/</code> when available): <code>![alt](../images/before-after.png)</code></li>
+<li>Remote image (must be blocked by default): <code>![x](https://example.com/x.png)</code></li>
+</ul>
+<h2>12. Security fixtures (must be neutralised, never executed)</h2>
+<script>document.title = "pwned";</script>
+<img src="x" onerror="document.title='pwned'">
+<p>[click](javascript:alert(1))</p>
+<iframe src="https://example.com"></iframe>
+<h2>13. Deep nesting and long lists</h2>
+<ol>
+<li>One
+<ul>
+<li>Two
+<ol>
+<li>Three
+<ul>
+<li>Four
+<ul>
+<li>Five</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>Quote level 1</p>
+<blockquote>
+<p>Quote level 2</p>
+<blockquote>
+<p>Quote level 3</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr />
+<p>Final paragraph with a very long unbreakable string: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+
+  <script>(function () {
+  'use strict';
+
+  function wrapTables() {
+    const tables = document.querySelectorAll('table:not(.viewmd-wrapped)');
+    tables.forEach((table) => {
+      if (table.parentElement && table.parentElement.classList.contains('viewmd-table-wrap')) {
+        table.classList.add('viewmd-wrapped');
+        return;
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'viewmd-table-wrap';
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+      table.classList.add('viewmd-wrapped');
+    });
+  }
+
+  function enhanceFrontMatter() {
+    // If stock markdown rendered frontmatter as details.fm or pre block
+    const detailsFm = document.querySelector('details.fm:not(.viewmd-fm-processed)');
+    if (detailsFm) {
+      detailsFm.classList.add('viewmd-fm-processed');
+      detailsFm.classList.add('viewmd-frontmatter-card');
+      return;
+    }
+
+    const preBlocks = document.querySelectorAll('pre > code');
+    for (const code of preBlocks) {
+      const text = (code.textContent || '').trim();
+      if (text.startsWith('summary:') || (text.startsWith('---') && text.includes('summary:'))) {
+        const pre = code.parentElement;
+        if (pre && !pre.classList.contains('viewmd-fm-processed')) {
+          pre.classList.add('viewmd-fm-processed');
+          renderFrontMatterCard(pre, text);
+          break;
+        }
+      }
+    }
+  }
+
+  function renderFrontMatterCard(container, rawText) {
+    const lines = rawText.replace(/^---/, '').replace(/---$/, '').trim().split('\n');
+    let summary = '';
+    let triggers = [];
+    let indexed = true;
+    const others = [];
+
+    lines.forEach((line) => {
+      const matchSummary = line.match(/^summary:\s*["']?(.*?)["']?$/);
+      const matchTriggers = line.match(/^triggers:\s*\[(.*?)\]/);
+      const matchIndex = line.match(/^index:\s*(false|true)/i);
+
+      if (matchSummary) {
+        summary = matchSummary[1];
+      } else if (matchTriggers) {
+        triggers = matchTriggers[1].split(',').map((t) => t.trim().replace(/^["']|["']$/g, ''));
+      } else if (matchIndex) {
+        indexed = matchIndex[1].toLowerCase() === 'true';
+      } else if (line.trim().length > 0) {
+        others.push(line.trim());
+      }
+    });
+
+    const card = document.createElement('details');
+    card.className = 'viewmd-frontmatter-card';
+    card.open = false;
+
+    const summaryEl = document.createElement('summary');
+    summaryEl.className = 'viewmd-frontmatter-header';
+    summaryEl.innerHTML = `<span>Front matter</span> ${!indexed ? '<span class="viewmd-chip" style="background:#cf222e;color:#fff;">Not indexed</span>' : ''}`;
+    card.appendChild(summaryEl);
+
+    const bodyEl = document.createElement('div');
+    bodyEl.style.marginTop = '8px';
+
+    if (summary) {
+      const sumDiv = document.createElement('div');
+      sumDiv.style.marginBottom = '6px';
+      sumDiv.innerHTML = `<strong>Summary:</strong> ${escapeHtml(summary)}`;
+      bodyEl.appendChild(sumDiv);
+    }
+
+    if (triggers.length > 0) {
+      const trigDiv = document.createElement('div');
+      trigDiv.style.marginBottom = '6px';
+      trigDiv.innerHTML = '<strong>Triggers:</strong> ';
+      triggers.forEach((t) => {
+        const chip = document.createElement('span');
+        chip.className = 'viewmd-chip';
+        chip.textContent = t;
+        trigDiv.appendChild(chip);
+      });
+      bodyEl.appendChild(trigDiv);
+    }
+
+    if (others.length > 0) {
+      const otherDiv = document.createElement('pre');
+      otherDiv.style.margin = '4px 0 0';
+      otherDiv.style.padding = '4px 8px';
+      otherDiv.textContent = others.join('\n');
+      bodyEl.appendChild(otherDiv);
+    }
+
+    card.appendChild(bodyEl);
+    container.parentNode.replaceChild(card, container);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>'"]/g, (tag) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;',
+    }[tag] || tag));
+  }
+
+  function run() {
+    wrapTables();
+    enhanceFrontMatter();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+
+  const observer = new MutationObserver(() => {
+    wrapTables();
+    enhanceFrontMatter();
+  });
+
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+})();
+</script>
+</body>
+</html>

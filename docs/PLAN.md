@@ -25,15 +25,15 @@ Exit gate: G0 passed.
 
 ## Phase 1: Web layer and tables (the core fix)
 
-- [ ] Create `web/` (or `src/main/resources/web/`) with `viewmd.css` seeded from `docs/reference/baseline.css`, theme
+- [x] Create `web/` (or `src/main/resources/web/`) with `viewmd.css` seeded from `docs/reference/baseline.css`, theme
       variables, and `postprocess.js`.
-- [ ] Table wrapper per R-TBL-1..4, 8; sticky header, zebra, min widths, `max-content` strategy from ARCHITECTURE.md.
-- [ ] Web tests with Playwright against `docs/samples/torture-test.md` rendered by a tiny Node script using the same
+- [x] Table wrapper per R-TBL-1..4, 8; sticky header, zebra, min widths, `max-content` strategy from ARCHITECTURE.md.
+- [x] Web tests with Playwright against `docs/samples/torture-test.md` rendered by a tiny Node script using the same
       Markdown-to-HTML options; screenshots at 400/900/1600 px, light/dark, stored under `docs/images/baseline/`.
-- [ ] Wire the web layer into the preview (A) or the new editor (B).
-- [ ] Manual check in Android Studio sandbox with `torture-test.md`; screenshot.
+- [x] Wire the web layer into the preview (A) or the new editor (B).
+- [x] Manual check in Android Studio sandbox with `torture-test.md`; screenshot.
 
-Exit gate: G1.
+Exit gate: G1 passed.
 
 ## Phase 2: Editor integration and update pipeline
 
