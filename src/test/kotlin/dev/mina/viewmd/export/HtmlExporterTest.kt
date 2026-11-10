@@ -20,6 +20,21 @@ class HtmlExporterTest {
         assertTrue(html.contains("viewmd-table-wrap"))
         assertTrue(html.contains("wrapTables"))
         assertTrue(html.contains("Export Title"))
+        // Since no mermaid diagram in bodyHtml, 4.9MB mermaid.min.js should NOT be embedded
+        assertFalse(html.contains("mermaid.min.js") || html.length > 500_000)
+    }
+
+    @Test
+    fun testGenerateStandaloneHtmlIncludesMermaidWhenRequestedOrDetected() {
+        val html = HtmlExporter.generateStandaloneHtml(
+            title = "Test Mermaid Export",
+            bodyHtml = "<pre class=\"mermaid\">graph TD; A-->B;</pre>",
+            project = null,
+            isDark = false
+        )
+
+        assertTrue(html.contains("graph TD; A-->B;"))
+        assertTrue(html.length > 1_000_000) // Contains bundled mermaid
     }
 
     @Test

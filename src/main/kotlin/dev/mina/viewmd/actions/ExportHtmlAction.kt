@@ -8,6 +8,7 @@ import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.ui.Messages
 import dev.mina.viewmd.export.HtmlExporter
+import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
@@ -25,7 +26,14 @@ class ExportHtmlAction : AnAction("Export as HTML...", "Export current document 
 
         try {
             val destination = wrapper.file.toPath()
-            val html = HtmlExporter.generateStandaloneHtml(virtualFile.name, "<div id=\"content\">" + document.text + "</div>", project)
+            val rawMarkdown = document.text
+            // Convert markdown source into HTML using the platform MarkdownUtil
+            val renderedBody = MarkdownUtil.generateMarkdownHtml(virtualFile, rawMarkdown, project)
+            val html = HtmlExporter.generateStandaloneHtml(
+                title = virtualFile.name,
+                bodyHtml = renderedBody,
+                project = project
+            )
             Files.writeString(destination, html, StandardCharsets.UTF_8)
             Messages.showInfoMessage(project, "Exported successfully to: $destination", "ViewMD Export")
         } catch (ex: Exception) {

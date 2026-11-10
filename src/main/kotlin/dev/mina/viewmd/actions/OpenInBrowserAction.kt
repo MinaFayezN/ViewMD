@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.ui.Messages
 import dev.mina.viewmd.export.HtmlExporter
+import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil
 
 class OpenInBrowserAction : AnAction("Open Preview in Browser", "Open full ViewMD preview in the default web browser", null) {
 
@@ -17,9 +18,14 @@ class OpenInBrowserAction : AnAction("Open Preview in Browser", "Open full ViewM
 
         try {
             val title = virtualFile.name
-            val text = document.text
-            // In stock preview, document text or rendered HTML is converted
-            val tempPath = HtmlExporter.exportToTempFile(title, "<div id=\"content\">" + text + "</div>", project)
+            val rawMarkdown = document.text
+            // Convert markdown source into HTML using the platform MarkdownUtil
+            val renderedBody = MarkdownUtil.generateMarkdownHtml(virtualFile, rawMarkdown, project)
+            val tempPath = HtmlExporter.exportToTempFile(
+                title = title,
+                bodyHtml = renderedBody,
+                project = project
+            )
             BrowserUtil.browse(tempPath.toFile())
         } catch (ex: Exception) {
             Messages.showErrorDialog(project, "Failed to export and open in browser: ${ex.message}", "ViewMD")

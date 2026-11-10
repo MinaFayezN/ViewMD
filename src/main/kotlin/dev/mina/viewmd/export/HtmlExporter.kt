@@ -14,11 +14,23 @@ object HtmlExporter {
         title: String,
         bodyHtml: String,
         project: Project?,
-        isDark: Boolean = false
+        isDark: Boolean = false,
+        includeMermaid: Boolean? = null
     ): String {
         val builtInCss = loadResourceText("web/viewmd.css")
         val postprocessJs = loadResourceText("web/postprocess.js")
-        val mermaidJs = loadResourceText("web/vendor/mermaid.min.js")
+
+        // Include the heavy (~4.9MB) Mermaid bundle only when needed
+        val needsMermaid = includeMermaid ?: bodyHtml.contains("class=\"mermaid\"") ||
+                bodyHtml.contains("class=\"language-mermaid\"") ||
+                bodyHtml.contains("```mermaid")
+
+        val mermaidScriptTag = if (needsMermaid) {
+            val mermaidJs = loadResourceText("web/vendor/mermaid.min.js")
+            "<script>\n$mermaidJs\n</script>"
+        } else {
+            ""
+        }
 
         val customCssText = resolveCustomCss(project)
 
@@ -54,9 +66,7 @@ object HtmlExporter {
           $themeOverride
           $customCssText
           </style>
-          <script>
-          $mermaidJs
-          </script>
+          $mermaidScriptTag
         </head>
         <body>
           $bodyHtml
@@ -68,8 +78,14 @@ object HtmlExporter {
         """.trimIndent()
     }
 
-    fun exportToTempFile(title: String, bodyHtml: String, project: Project?, isDark: Boolean = false): Path {
-        val html = generateStandaloneHtml(title, bodyHtml, project, isDark)
+    fun exportToTempFile(
+        title: String,
+        bodyHtml: String,
+        project: Project?,
+        isDark: Boolean = false,
+        includeMermaid: Boolean? = null
+    ): Path {
+        val html = generateStandaloneHtml(title, bodyHtml, project, isDark, includeMermaid)
         val tempFile = Files.createTempFile("viewmd-export-", ".html")
         Files.writeString(tempFile, html, StandardCharsets.UTF_8)
         return tempFile
