@@ -17,6 +17,11 @@ class ViewMdConfigurable(private val project: Project) : BoundSearchableConfigur
     private val settings = ViewMdSettings.instance
     private val diagnosticsLabel = JLabel()
 
+    override fun apply() {
+        super.apply()
+        settings.fireSettingsChanged()
+    }
+
     override fun createPanel(): DialogPanel {
         return panel {
             group("Layout & Typography") {

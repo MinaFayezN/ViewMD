@@ -32,6 +32,13 @@ class ViewMdSettings : PersistentStateComponent<ViewMdSettings.State> {
 
     override fun loadState(state: State) {
         XmlSerializerUtil.copyBean(state, myState)
+        fireSettingsChanged()
+    }
+
+    fun fireSettingsChanged() {
+        ApplicationManager.getApplication().messageBus
+            .syncPublisher(ViewMdSettingsListener.TOPIC)
+            .onSettingsChanged(myState)
     }
 
     companion object {

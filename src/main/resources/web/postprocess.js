@@ -187,16 +187,91 @@
     }
   }
 
+let customStyleEl = null;
+
+  function applyCustomCss(cssText) {
+    if (!customStyleEl) {
+      customStyleEl = document.createElement('style');
+      customStyleEl.id = 'viewmd-custom-user-style';
+      document.head.appendChild(customStyleEl);
+    }
+    customStyleEl.textContent = cssText || '';
+  }
+
+  function applySettings(settings) {
+    if (!settings) return;
+    const root = document.documentElement;
+
+    if (settings.maxWidth) {
+      root.style.setProperty('--viewmd-max-width', settings.maxWidth);
+    }
+    if (settings.fontSizePx) {
+      root.style.setProperty('--viewmd-font-size', settings.fontSizePx + 'px');
+      document.body.style.fontSize = settings.fontSizePx + 'px';
+    }
+    if (settings.fontFamily) {
+      root.style.setProperty('--viewmd-font-sans', settings.fontFamily);
+      document.body.style.fontFamily = settings.fontFamily;
+    }
+    if (settings.colMinChars) {
+      root.style.setProperty('--viewmd-col-min', settings.colMinChars + 'ch');
+    }
+    if (settings.colFirstMinChars) {
+      root.style.setProperty('--viewmd-col-first-min', settings.colFirstMinChars + 'ch');
+    }
+
+    if (typeof settings.hideFrontMatterCard === 'boolean') {
+      const cards = document.querySelectorAll('.viewmd-frontmatter-card');
+      cards.forEach((card) => {
+        card.style.display = settings.hideFrontMatterCard ? 'none' : '';
+      });
+    }
+
+    if (typeof settings.expandFrontMatterCard === 'boolean') {
+      const cards = document.querySelectorAll('.viewmd-frontmatter-card');
+      cards.forEach((card) => {
+        if (!settings.hideFrontMatterCard) {
+          card.open = settings.expandFrontMatterCard;
+        }
+      });
+    }
+
+    if (typeof settings.customCss === 'string') {
+      applyCustomCss(settings.customCss);
+    }
+  }
+
+  function handleViewMdPayload(payload) {
+    if (!payload) return;
+    if (payload.type === 'THEME_CHANGED') {
+      applyTheme(payload.isDark);
+    } else if (payload.type === 'SETTINGS_CHANGED') {
+      applySettings(payload);
+    } else if (payload.type === 'CUSTOM_CSS_CHANGED') {
+      applyCustomCss(payload.css);
+    }
+  }
+
   window.addEventListener('message', (event) => {
     if (!event.data) return;
     try {
       const payload = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-      if (payload.type === 'THEME_CHANGED') {
-        applyTheme(payload.isDark);
-      }
+      handleViewMdPayload(payload);
     } catch (e) {
     }
   });
+
+  // Subscribe to JetBrains JCEF MessagePipe if present
+  if (window.__IntelliJTools && window.__IntelliJTools.messagePipe) {
+    try {
+      window.__IntelliJTools.messagePipe.subscribe('viewmd:event', (data) => {
+        try {
+          const payload = typeof data === 'string' ? JSON.parse(data) : data;
+          handleViewMdPayload(payload);
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
 
   function run() {
     wrapTables();
