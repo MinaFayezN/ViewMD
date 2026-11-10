@@ -74,14 +74,19 @@ Exit gate: G5 passed.
 
 ## Phase 6: Hardening, docs, release candidate
 
-- [ ] `verifyPlugin` against every target; fix all compatibility warnings; deliberate `since-build`/`until-build`.
-- [ ] Plugin size audit and trimming (R-NFR-6).
-- [ ] Complete `docs/DOCUMENTATION_PLAN.md`: README, user guide, developer guide, architecture, contributing,
+- [x] `verifyPlugin` against every target; fix all compatibility warnings; deliberate `since-build`/`until-build`.
+- [x] Plugin size audit and trimming (R-NFR-6).
+- [x] Complete `docs/DOCUMENTATION_PLAN.md`: README, user guide, developer guide, architecture, contributing,
       security, FAQ, changelog, screenshots, Marketplace description in `plugin.xml`.
-- [ ] CI green on the existing workflows (`build.yml`, `release.yml`); secrets remain placeholders, listed in the README.
-- [ ] Release checklist rehearsal with `./gradlew buildPlugin` and a signed build dry run if secrets exist.
+- [x] CI green on the existing workflows (`build.yml`, `release.yml`); secrets remain placeholders, listed in the README.
+- [x] Release checklist rehearsal with `./gradlew buildPlugin` and a signed build dry run if secrets exist.
 
-Exit gate: G6. Then tag `1.0.0-rc.1` locally (do not push).
+Exit gate: G6 passed. Tag `1.0.0-rc.1` locally.
+
+## Known Limitations
+
+- **PlantUML Graphviz fallback**: Complex PlantUML graphs requiring specific Graphviz plugins run via the bundled pure-Java Smetana layout engine. Very complex custom Graphviz pragmas may render with simplified layout geometry.
+- **Exported HTML script execution**: Exported standalone HTML pages bundle the Mermaid runtime; opening them in strict browser sandboxes requires JavaScript enabled for interactive rendering.
 
 ## Risks
 
