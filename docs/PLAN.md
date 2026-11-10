@@ -46,13 +46,13 @@ Exit gate: G2 passed.
 
 ## Phase 3: Front matter, settings and custom CSS
 
-- [ ] Front matter parser (YAML subset first; use a vetted parser if bundled in the platform, otherwise a small
+- [x] Front matter parser (YAML subset first; use a vetted parser if bundled in the platform, otherwise a small
       strict one) and card UI (R-FM-1..4).
-- [ ] Settings service and Kotlin UI DSL configurable (R-CSS-1).
-- [ ] `CssResolver`, `CssWatcher`, diagnostics UI, live reload (R-CSS-2..5).
-- [ ] Settings migration/versioning for future releases.
+- [x] Settings service and Kotlin UI DSL configurable (R-CSS-1).
+- [x] `CssResolver`, `CssWatcher`, diagnostics UI, live reload (R-CSS-2..5).
+- [x] Settings migration/versioning for future releases.
 
-Exit gate: G3.
+Exit gate: G3 passed.
 
 ## Phase 4: Diagrams and rich content
 

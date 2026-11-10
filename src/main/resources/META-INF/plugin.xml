@@ -13,6 +13,15 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.plugins.markdown</depends>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable
+            parentId="tools"
+            instance="dev.mina.viewmd.settings.ViewMdConfigurable"
+            id="dev.mina.viewmd.settings"
+            displayName="ViewMD"
+            nonDefaultProject="true" />
+    </extensions>
+
     <extensions defaultExtensionNs="org.intellij.markdown">
         <browserPreviewExtensionProvider implementation="dev.mina.viewmd.extensions.ViewMdBrowserPreviewExtension$Provider" />
     </extensions>
