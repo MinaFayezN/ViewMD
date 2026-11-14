@@ -2,13 +2,37 @@
 <idea-plugin>
     <id>dev.mina.ViewMD</id>
     <name>ViewMD</name>
-    <vendor email="support@mina.dev" url="https://github.com/mina/ViewMD">dev.mina</vendor>
+    <vendor email="MinaFayezN@gmail.com" url="https://github.com/mina/ViewMD">dev.mina</vendor>
 
     <description><![CDATA[
-        ViewMD delivers an enhanced Markdown preview for IntelliJ IDEA and Android Studio:
-        wide tables that scroll instead of squeezing columns, YAML front matter presented as cards,
-        and offline-first diagram support.
+        <p><b>ViewMD</b> delivers a cleaner, smarter Markdown preview for Android Studio and IntelliJ-based IDEs.</p>
+        <p>Tired of squeezed tables wrapping text one letter per line or missing offline diagram renderers? ViewMD fixes markdown rendering friction with responsive layouts and offline-first tools.</p>
+        <h3>Key Features</h3>
+        <ul>
+            <li><b>Responsive Table Scrolling</b>: Wide tables scroll horizontally inside an overflow container with sticky headers, zebra striping, and readable column widths — no more squeezed columns.</li>
+            <li><b>Table Action Toolbar</b>: Hover over any table to quickly copy it as clean GitHub Flavored Markdown or TSV for Google Sheets/Excel.</li>
+            <li><b>YAML Front Matter Cards</b>: Document metadata headers (<code>summary:</code>, <code>triggers:</code>, <code>index:</code>) render as sleek, collapsible information cards.</li>
+            <li><b>100% Offline Diagrams</b>: Bundled client-side Mermaid diagrams and in-process PlantUML (powered by Smetana) — zero remote calls or CDN dependencies.</li>
+            <li><b>Custom CSS Diagnostics</b>: Robust path resolver for custom stylesheets (supporting <code>~</code>, relative paths, and absolute paths) with live reload.</li>
+            <li><b>Dynamic Theme Switching</b>: Seamlessly adapts to light, dark, and high-contrast IDE themes.</li>
+            <li><b>Export & Sharing</b>: One-click "Open in Browser" and "Export as HTML" with bundled inlined styles.</li>
+        </ul>
     ]]></description>
+
+    <change-notes><![CDATA[
+        <h3>1.0.0</h3>
+        <ul>
+            <li>Initial public release of ViewMD for Android Studio and IntelliJ IDEA.</li>
+            <li>Horizontal table scroll container preventing text column squeezing.</li>
+            <li>Interactive table toolbar with Copy Markdown and Copy TSV options.</li>
+            <li>Collapsible YAML front matter card display with chip styling.</li>
+            <li>Offline Mermaid and PlantUML rendering without external dependencies.</li>
+            <li>Live custom CSS reload and path validation diagnostics.</li>
+            <li>Standalone HTML export and browser preview actions.</li>
+        </ul>
+    ]]></change-notes>
+
+    <idea-version since-build="262" />
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.plugins.markdown</depends>

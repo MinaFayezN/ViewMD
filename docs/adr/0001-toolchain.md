@@ -18,10 +18,10 @@ ViewMD must build reliably on the developer workstation and target both IntelliJ
 | Gradle Wrapper | 9.8.2 | `./gradlew --version` |
 | Kotlin JVM Plugin | 2.4.0 | `settings.gradle.kts` |
 | IntelliJ Platform Gradle Plugin | 2.20.0 | `settings.gradle.kts` |
-| Android Studio Install | `/home/mina/.local/share/JetBrains/Toolbox/apps/android-studio` | Discovered from Toolbox |
+| Android Studio Install | `~/.local/share/JetBrains/Toolbox/apps/android-studio` | Discovered from Toolbox |
 | Android Studio Version & Build | `AI-262.10968.63.2622.16840690` (selector: `AndroidStudio2026.2.2`) | `product-info.json` |
 | Android Studio JBR | OpenJDK 25.0.4 (`build 25.0.4+-16339643-b508.27`) | `jbr/bin/java -version` |
-| IntelliJ IDEA Install | `/home/mina/.local/share/JetBrains/Toolbox/apps/intellij-idea` | Discovered from Toolbox |
+| IntelliJ IDEA Install | `~/.local/share/JetBrains/Toolbox/apps/intellij-idea` | Discovered from Toolbox |
 | IntelliJ IDEA Version & Build | `2026.3` (Build `263.7307.200`) | `product-info.json` |
 | IntelliJ IDEA JBR | OpenJDK 25.0.4.1 (`build 25.0.4.1+1-b635.79`) | `jbr/bin/java -version` |
 

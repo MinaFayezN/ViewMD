@@ -1,3 +1,21 @@
+/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 (function () {
   'use strict';
 
@@ -245,7 +263,7 @@
       }
       // Trigger diagram color refresh on existing SVGs
       document.querySelectorAll('.viewmd-diagram-container').forEach((c) => {
-        // SVG styling updates smoothly via CSS variables, and diagrams with stored source re-render if needed
+        // SVG styling updates smoothly via CSS variables
       });
     }
   }
@@ -274,7 +292,7 @@
     } catch (err) {}
   }
 
-let customStyleEl = null;
+  let customStyleEl = null;
 
   function applyCustomCss(cssText) {
     if (!customStyleEl) {
@@ -360,40 +378,6 @@ let customStyleEl = null;
     } catch (e) {}
   }
 
-  function run() {
-    initThemeToggle();
-    wrapTables();
-    enhanceFrontMatter();
-    renderMermaidDiagrams();
-    addTableToolbar();
-    addCopyButtonsToCodeBlocks();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else {
-    run();
-  }
-
-  let debounceTimer = null;
-  const observer = new MutationObserver(() => {
-    if (debounceTimer) return;
-    debounceTimer = setTimeout(() => {
-      debounceTimer = null;
-      initThemeToggle();
-    wrapTables();
-      renderMermaidDiagrams();
-      addTableToolbar();
-      addCopyButtonsToCodeBlocks();
-    }, 50);
-  });
-
-  observer.observe(document.body || document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
-})();
-
   function addCopyButtonsToCodeBlocks() {
     const pres = document.querySelectorAll('pre:not(.viewmd-copy-ready)');
     pres.forEach((pre) => {
@@ -434,9 +418,13 @@ let customStyleEl = null;
         const table = wrap.querySelector('table');
         if (!table) return;
         const mdText = tableToMarkdown(table);
-        await navigator.clipboard.writeText(mdText);
-        copyMdBtn.textContent = 'Copied!';
-        setTimeout(() => { copyMdBtn.textContent = 'Copy Markdown'; }, 1500);
+        try {
+          await navigator.clipboard.writeText(mdText);
+          copyMdBtn.textContent = 'Copied!';
+          setTimeout(() => { copyMdBtn.textContent = 'Copy Markdown'; }, 1500);
+        } catch (err) {
+          copyMdBtn.textContent = 'Failed';
+        }
       });
 
       const copyTsvBtn = document.createElement('button');
@@ -446,9 +434,13 @@ let customStyleEl = null;
         const table = wrap.querySelector('table');
         if (!table) return;
         const tsvText = tableToTsv(table);
-        await navigator.clipboard.writeText(tsvText);
-        copyTsvBtn.textContent = 'Copied!';
-        setTimeout(() => { copyTsvBtn.textContent = 'Copy TSV'; }, 1500);
+        try {
+          await navigator.clipboard.writeText(tsvText);
+          copyTsvBtn.textContent = 'Copied!';
+          setTimeout(() => { copyTsvBtn.textContent = 'Copy TSV'; }, 1500);
+        } catch (err) {
+          copyTsvBtn.textContent = 'Failed';
+        }
       });
 
       toolbar.appendChild(copyMdBtn);
@@ -472,3 +464,37 @@ let customStyleEl = null;
       return cells.join('\t');
     }).join('\n');
   }
+
+  function run() {
+    initThemeToggle();
+    wrapTables();
+    enhanceFrontMatter();
+    renderMermaidDiagrams();
+    addTableToolbar();
+    addCopyButtonsToCodeBlocks();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+
+  let debounceTimer = null;
+  const observer = new MutationObserver(() => {
+    if (debounceTimer) return;
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      initThemeToggle();
+      wrapTables();
+      renderMermaidDiagrams();
+      addTableToolbar();
+      addCopyButtonsToCodeBlocks();
+    }, 50);
+  });
+
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+})();

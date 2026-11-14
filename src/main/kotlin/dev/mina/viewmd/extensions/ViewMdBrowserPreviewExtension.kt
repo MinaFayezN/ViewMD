@@ -1,3 +1,21 @@
+/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dev.mina.viewmd.extensions
 
 import com.intellij.ide.ui.LafManager
@@ -27,100 +45,93 @@ class ViewMdBrowserPreviewExtension(
 
     override val resourceProvider: ResourceProvider = object : ResourceProvider {
         override fun canProvide(resourceName: String): Boolean {
-            return resourceName == "web/viewmd.css" ||
-                   resourceName == "web/postprocess.js" ||
-                   resourceName == "web/vendor/mermaid.min.js"
+            val clean = resourceName.removePrefix("/")
+            return clean == "web/viewmd.css" ||
+                   clean == "web/postprocess.js" ||
+                   clean == "web/vendor/mermaid.min.js"
         }
 
         override fun loadResource(resourceName: String): ResourceProvider.Resource? {
+            val normalized = if (resourceName.startsWith("/")) resourceName else "/$resourceName"
             return ResourceProvider.loadInternalResource(
                 ViewMdBrowserPreviewExtension::class.java,
-                resourceName,
+                normalized,
                 null
             )
         }
     }
 
-    private val connection = ApplicationManager.getApplication().messageBus.connect(this)
     private val cssWatcher = CssWatcher(panel.project, this) { path ->
-        try {
-            val content = Files.readString(path)
-            sendCustomCss(content)
-        } catch (e: Exception) {
-            logger.warn("Failed reading changed custom CSS file: $path", e)
-        }
+        reloadCustomCss(path)
     }
+
+    @Volatile
+    private var isDisposed = false
 
     init {
-        // Theme changes
-        connection.subscribe(LafManagerListener.TOPIC, LafManagerListener {
-            val isDark = isCurrentThemeDark()
-            notifyThemeChanged(isDark)
+        val busConnection = ApplicationManager.getApplication().messageBus.connect(this)
+
+        // Listen for IDE Theme changes (Light/Dark mode)
+        busConnection.subscribe(LafManagerListener.TOPIC, LafManagerListener {
+            if (isDisposed) return@LafManagerListener
+            val isDark = LafManager.getInstance().currentUIThemeLookAndFeel?.isDark ?: false
+            sendThemeEvent(isDark)
         })
 
-        // Live settings synchronization
-        connection.subscribe(ViewMdSettingsListener.TOPIC, ViewMdSettingsListener { state ->
-            applySettings(state)
+        // Listen for ViewMD settings adjustments (Width, Fonts, Front Matter Card visibility)
+        busConnection.subscribe(ViewMdSettingsListener.TOPIC, ViewMdSettingsListener { settings ->
+            if (isDisposed) return@ViewMdSettingsListener
+            applySettings(settings)
         })
 
-        // Initial settings push on creation
-        ApplicationManager.getApplication().invokeLater({
-            applySettings(ViewMdSettings.instance.state)
-            val isDark = isCurrentThemeDark()
-            notifyThemeChanged(isDark)
-        }, { Disposer.isDisposed(this) })
+        // Initialize custom CSS watching and initial settings
+        applySettings(ViewMdSettings.instance.state)
     }
 
-    private fun isCurrentThemeDark(): Boolean {
-        val theme = LafManager.getInstance().currentUIThemeLookAndFeel
-        return theme?.isDark ?: false
-    }
-
-    private fun notifyThemeChanged(isDark: Boolean) {
+    private fun sendThemeEvent(isDark: Boolean) {
         val json = """{"type":"THEME_CHANGED","isDark":$isDark}"""
         sendToBrowser("THEME_CHANGED", json)
     }
 
-    private fun applySettings(state: ViewMdSettings.State) {
-        val maxWidth = if (state.isFullWidth) "none" else "${state.contentWidthPx}px"
-        val customCssContent = resolveCustomCss(state.customCssPath)
+    private fun applySettings(settings: ViewMdSettings.State) {
+        val widthStr = if (settings.isFullWidth) "100%" else "${settings.contentWidthPx}px"
+        val fontFamStr = settings.fontFamily.replace("\"", "\\\"")
 
-        val json = buildString {
-            append("{")
-            append("\"type\":\"SETTINGS_CHANGED\",")
-            append("\"maxWidth\":\"").append(escapeJson(maxWidth)).append("\",")
-            append("\"fontSizePx\":").append(state.fontSizePx).append(",")
-            append("\"fontFamily\":\"").append(escapeJson(state.fontFamily)).append("\",")
-            append("\"colMinChars\":").append(state.colMinChars).append(",")
-            append("\"colFirstMinChars\":").append(state.colFirstMinChars).append(",")
-            append("\"hideFrontMatterCard\":").append(state.hideFrontMatterCard).append(",")
-            append("\"expandFrontMatterCard\":").append(state.expandFrontMatterCard).append(",")
-            append("\"customCss\":\"").append(escapeJson(customCssContent)).append("\"")
-            append("}")
+        // Handle custom CSS resolution
+        val status = CssResolver.resolve(settings.customCssPath, panel.project)
+        val customCssContent = if (status is CssStatus.Valid) {
+            cssWatcher.setWatchedPath(status.path)
+            try {
+                Files.readString(status.path)
+            } catch (e: Exception) {
+                ""
+            }
+        } else {
+            cssWatcher.setWatchedPath(null)
+            ""
         }
+
+        val json = """{
+            "type":"SETTINGS_CHANGED",
+            "maxWidth":"$widthStr",
+            "fontFamily":"$fontFamStr",
+            "fontSizePx":${settings.fontSizePx},
+            "colMinChars":${settings.colMinChars},
+            "colFirstMinChars":${settings.colFirstMinChars},
+            "hideFrontMatterCard":${settings.hideFrontMatterCard},
+            "expandFrontMatterCard":${settings.expandFrontMatterCard},
+            "customCss":"${escapeJson(customCssContent)}"
+        }""".trimIndent().replace("\n", "")
 
         sendToBrowser("SETTINGS_CHANGED", json)
     }
 
-    private fun resolveCustomCss(cssPath: String): String {
-        val status = CssResolver.resolve(cssPath, panel.project)
-        return when (status) {
-            is CssStatus.Valid -> {
-                cssWatcher.setWatchedPath(status.path)
-                try {
-                    Files.readString(status.path)
-                } catch (e: Exception) {
-                    ""
-                }
-            }
-            else -> {
-                cssWatcher.setWatchedPath(null)
-                ""
-            }
+    private fun reloadCustomCss(path: java.nio.file.Path) {
+        val cssContent = try {
+            Files.readString(path)
+        } catch (e: Exception) {
+            ""
         }
-    }
-
-    private fun sendCustomCss(cssContent: String) {
         val json = """{"type":"CUSTOM_CSS_CHANGED","css":"${escapeJson(cssContent)}"}"""
         sendToBrowser("CUSTOM_CSS_CHANGED", json)
     }
@@ -162,7 +173,7 @@ class ViewMdBrowserPreviewExtension(
     }
 
     override fun dispose() {
-        // Automatically cleaned up by Disposer
+        isDisposed = true
     }
 
     class Provider : MarkdownBrowserPreviewExtension.Provider {

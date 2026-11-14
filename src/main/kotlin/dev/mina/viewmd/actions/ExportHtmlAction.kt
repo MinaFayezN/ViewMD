@@ -1,7 +1,24 @@
+/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dev.mina.viewmd.actions
 
 import com.intellij.ide.ui.LafManager
-
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -14,6 +31,9 @@ import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
+/**
+ * Action to export the currently active Markdown document as a standalone ViewMD HTML file.
+ */
 class ExportHtmlAction : AnAction("Export as HTML...", "Export current document as a standalone ViewMD HTML file", null) {
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -29,7 +49,6 @@ class ExportHtmlAction : AnAction("Export as HTML...", "Export current document 
         try {
             val destination = wrapper.file.toPath()
             val rawMarkdown = document.text
-            // Convert markdown source into HTML using the platform MarkdownUtil
             val renderedBody = MarkdownUtil.generateMarkdownHtml(virtualFile, rawMarkdown, project)
             val isDark = LafManager.getInstance().currentUIThemeLookAndFeel?.isDark ?: false
             val html = HtmlExporter.generateStandaloneHtml(
@@ -47,7 +66,8 @@ class ExportHtmlAction : AnAction("Export as HTML...", "Export current document 
 
     override fun update(e: AnActionEvent) {
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
-        val isMarkdown = file != null && (file.extension.equals("md", ignoreCase = true) || file.extension.equals("markdown", ignoreCase = true))
+        val ext = file?.extension
+        val isMarkdown = ext != null && (ext.equals("md", ignoreCase = true) || ext.equals("markdown", ignoreCase = true))
         e.presentation.isEnabledAndVisible = isMarkdown
     }
 }

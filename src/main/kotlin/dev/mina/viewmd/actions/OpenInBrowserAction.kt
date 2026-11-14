@@ -1,3 +1,21 @@
+/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dev.mina.viewmd.actions
 
 import com.intellij.ide.BrowserUtil
@@ -10,6 +28,9 @@ import com.intellij.openapi.ui.Messages
 import dev.mina.viewmd.export.HtmlExporter
 import org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil
 
+/**
+ * Action to open the full ViewMD Markdown preview in the user's default external web browser.
+ */
 class OpenInBrowserAction : AnAction("Open Preview in Browser", "Open full ViewMD preview in the default web browser", null) {
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -20,7 +41,6 @@ class OpenInBrowserAction : AnAction("Open Preview in Browser", "Open full ViewM
         try {
             val title = virtualFile.name
             val rawMarkdown = document.text
-            // Convert markdown source into HTML using the platform MarkdownUtil
             val renderedBody = MarkdownUtil.generateMarkdownHtml(virtualFile, rawMarkdown, project)
             val isDark = LafManager.getInstance().currentUIThemeLookAndFeel?.isDark ?: false
             val tempPath = HtmlExporter.exportToTempFile(
@@ -37,7 +57,8 @@ class OpenInBrowserAction : AnAction("Open Preview in Browser", "Open full ViewM
 
     override fun update(e: AnActionEvent) {
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
-        val isMarkdown = file != null && (file.extension.equals("md", ignoreCase = true) || file.extension.equals("markdown", ignoreCase = true))
+        val ext = file?.extension
+        val isMarkdown = ext != null && (ext.equals("md", ignoreCase = true) || ext.equals("markdown", ignoreCase = true))
         e.presentation.isEnabledAndVisible = isMarkdown
     }
 }

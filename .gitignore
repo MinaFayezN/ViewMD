@@ -1,4 +1,53 @@
-.gradle
-.idea
-.intellijPlatform
-build
+# Build and compilation outputs
+build/
+out/
+dist/
+bin/
+
+# Gradle runtime
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# IntelliJ / Android Studio internal platform sandbox & Kotlin
+.intellijPlatform/
+.kotlin/
+
+# IDE files (IntelliJ, Eclipse, NetBeans, VS Code)
+.idea/
+*.iml
+*.ipr
+*.iws
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+.vscode/
+
+# Node.js and Playwright test artifacts
+web-test/node_modules/
+web-test/playwright-report/
+web-test/test-results/
+
+# Local guides, checklists, certificates & private scripts (never push)
+local/
+*.local.*
+
+# Agent prompts & internal AI notes (per user instruction)
+docs/AGENT_PROMPT.md
+docs/reference/mdview-prototype.py
+
+# Plugin signing certificates & keys
+*.pem
+*.key
+*.crt
+*.jks
+
+# Logs and OS files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
