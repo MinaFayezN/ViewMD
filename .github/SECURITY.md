@@ -20,3 +20,4 @@ Instead, please report it via one of the following private channels:
 2. **Email**: Contact the maintainers directly at `security@mina.dev`.
 
 Please include detailed reproduction steps, affected environment versions, and potential impact. We will acknowledge receipt within 48 hours and work with you on a coordinated fix and release before public disclosure.
+

@@ -20,3 +20,4 @@ Fixes #
 - [ ] Changes adhere to the strict Content Security Policy (`default-src 'none'`).
 - [ ] Documentation and `CHANGELOG.md` have been updated if user-facing behavior changed.
 - [ ] Sensitive paths, machine-specific paths, or proprietary enterprise tokens are absent.
+

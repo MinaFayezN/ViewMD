@@ -50,6 +50,11 @@ async function run() {
   fs.writeFileSync(tmpLight, injectProductionAssets(lightSource));
   fs.writeFileSync(tmpDark, injectProductionAssets(darkSource));
 
+  // Clean any stale video files
+  const videoDir = path.join(SCREENSHOTS_DIR, 'video');
+  fs.rmSync(videoDir, { recursive: true, force: true });
+  fs.mkdirSync(videoDir, { recursive: true });
+
   // 1. Capture High-Resolution 1280x800 Screenshots
   const page = await browser.newPage({
     viewport: { width: 1280, height: 800 }
@@ -104,6 +109,22 @@ async function run() {
 
   await page.close();
 
+  // 1b. Capture Clean Baseline Screenshots for Visual Testing (400, 900, 1600 px)
+  const baselineDir = path.join(DOCS_IMAGES_DIR, 'baseline');
+  fs.mkdirSync(baselineDir, { recursive: true });
+  for (const mode of ['light', 'dark']) {
+    const fixturePath = 'file://' + path.resolve(__dirname, `fixtures/torture-test-${mode}.html`);
+    for (const width of [400, 900, 1600]) {
+      const bPage = await browser.newPage({ viewport: { width, height: 1000 } });
+      await bPage.goto(fixturePath, { waitUntil: 'load' });
+      await bPage.waitForTimeout(200);
+      const bShot = path.join(baselineDir, `torture-test-${width}-${mode}.png`);
+      await bPage.screenshot({ path: bShot });
+      await bPage.close();
+      console.log('Saved baseline:', bShot);
+    }
+  }
+
   // 2. Record Video Demo (WebM -> MP4 & GIF)
   console.log('Recording interactive demonstration video...');
   const videoContext = await browser.newContext({
@@ -142,20 +163,19 @@ async function run() {
   });
   await vPage.waitForTimeout(600);
 
+  const videoPath = await vPage.video().path();
   await vPage.close();
   await videoContext.close();
 
-  // Find generated video file
-  const videoFiles = fs.readdirSync(path.join(SCREENSHOTS_DIR, 'video')).filter(f => f.endsWith('.webm'));
-  if (videoFiles.length > 0) {
-    const latestVideo = path.join(SCREENSHOTS_DIR, 'video', videoFiles[0]);
+  // Convert the newly recorded video file
+  if (videoPath && fs.existsSync(videoPath)) {
     const mp4Output = path.join(SCREENSHOTS_DIR, 'demo-table-scrolling.mp4');
     const gifOutput = path.join(SCREENSHOTS_DIR, 'demo.gif');
 
-    console.log('Converting WebM video to MP4 and animated GIF using ffmpeg...');
+    console.log('Converting WebM video to MP4 and animated GIF using ffmpeg from:', videoPath);
     try {
-      execSync(`ffmpeg -y -i "${latestVideo}" -c:v libx264 -pix_fmt yuv420p "${mp4Output}"`, { stdio: 'ignore' });
-      execSync(`ffmpeg -y -i "${latestVideo}" -vf "fps=12,scale=800:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 "${gifOutput}"`, { stdio: 'ignore' });
+      execSync(`ffmpeg -y -i "${videoPath}" -c:v libx264 -pix_fmt yuv420p "${mp4Output}"`, { stdio: 'ignore' });
+      execSync(`ffmpeg -y -i "${videoPath}" -vf "fps=12,scale=800:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 "${gifOutput}"`, { stdio: 'ignore' });
 
       // Copy showcase demo to docs/images for README
       fs.copyFileSync(gifOutput, path.join(DOCS_IMAGES_DIR, 'demo.gif'));
