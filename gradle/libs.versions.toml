@@ -1,6 +1,6 @@
 [versions]
 junit = "4.13.2"
-plantuml = "1.2024.7"
+plantuml = "1.2026.10"
 mockk = "1.13.16"
 
 [libraries]
