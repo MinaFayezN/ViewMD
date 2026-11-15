@@ -91,8 +91,8 @@ Navigate to `Settings > Tools > ViewMD`:
 
 ViewMD maintains an uncompromising **Automated Regression Testing Mandate**: every bug fix, user feedback item, security mitigation, and UI change is covered by dedicated automated tests.
 
-- **Kotlin Unit & Platform Tests**: 67 tests verifying AST manipulation, CSS resolving, settings state persistence, front matter parsing, PlantUML offline rendering, and HTML export.
-- **Playwright E2E Browser Suite**: 28 tests verifying table wrapping, Markdown/TSV clipboard exports, front matter transformation, offline Mermaid diagram rendering, live settings IPC, and prototype pollution defenses.
+- **Kotlin Unit & Platform Tests**: 68 tests verifying AST manipulation, CSS resolving, settings state persistence, front matter parsing, PlantUML offline rendering, and HTML export.
+- **Playwright E2E Browser Suite**: 29 tests verifying table wrapping, Markdown/TSV clipboard exports, front matter transformation, offline Mermaid diagram rendering, live settings IPC, and prototype pollution defenses.
 - **Visual Torture Test**: 6 multi-viewport automated checks (400px, 900px, 1600px across Light and Dark themes) guaranteeing zero horizontal document blow-out.
 
 ```bash

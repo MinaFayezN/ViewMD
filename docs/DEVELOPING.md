@@ -32,12 +32,12 @@ Distribution archive will be generated at `build/distributions/ViewMD-1.0.0.zip`
 
 ## Running Tests
 
-### Kotlin Unit & Platform Tests (67 tests)
+### Kotlin Unit & Platform Tests (68 tests)
 ```bash
 ./gradlew test
 ```
 
-### Playwright Web & E2E Tests (28 tests)
+### Playwright Web & E2E Tests (29 tests)
 ```bash
 cd web-test
 npx playwright test

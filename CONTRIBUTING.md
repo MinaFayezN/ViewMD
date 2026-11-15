@@ -53,10 +53,10 @@ Every Kotlin source file, test file, CSS stylesheet, and JavaScript file must ma
 2. Make your changes and add corresponding automated tests.
 3. Verify all test suites pass locally:
    ```bash
-   # 1. Run Kotlin tests (67 unit & platform tests)
+   # 1. Run Kotlin tests (68 unit & platform tests)
    ./gradlew test
 
-   # 2. Run Playwright E2E browser tests (28 tests)
+   # 2. Run Playwright E2E browser tests (29 tests)
    cd web-test && npx playwright test
 
    # 3. Run visual multi-viewport layout tests (6 viewports)
