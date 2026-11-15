@@ -5,6 +5,7 @@ const { chromium } = require('playwright');
 
 const CSS_PATH = path.resolve(__dirname, '../src/main/resources/web/viewmd.css');
 const JS_PATH = path.resolve(__dirname, '../src/main/resources/web/postprocess.js');
+const MERMAID_PATH = path.resolve(__dirname, '../src/main/resources/web/vendor/mermaid.min.js');
 const SCREENSHOTS_DIR = path.resolve(__dirname, '../local/screenshots');
 const DOCS_IMAGES_DIR = path.resolve(__dirname, '../docs/images');
 
@@ -14,15 +15,17 @@ fs.mkdirSync(DOCS_IMAGES_DIR, { recursive: true });
 
 const viewmdCss = fs.readFileSync(CSS_PATH, 'utf-8');
 const postprocessJs = fs.readFileSync(JS_PATH, 'utf-8');
+const mermaidJs = fs.readFileSync(MERMAID_PATH, 'utf-8');
 
 function injectProductionAssets(htmlContent) {
   // Replace existing styles and scripts with latest production assets
   let modified = htmlContent;
-  modified = modified.replace(/<style>[\s\S]*?<\/style>/i, `<style>${viewmdCss}</style>`);
+  modified = modified.replace(/<style>[\s\S]*?<\/style>/i, () => `<style>${viewmdCss}</style>`);
   modified = modified.replace(/<script>[\s\S]*?<\/script>/gi, '');
   modified = modified.replace(
     '</body>',
-    `<button id="viewmd-theme-toggle" class="viewmd-theme-toggle" type="button" style="display:none;"></button>
+    () => `<button id="viewmd-theme-toggle" class="viewmd-theme-toggle" type="button" style="display:none;"></button>
+     <script>${mermaidJs}</script>
      <script>${postprocessJs}</script>
      </body>`
   );
@@ -92,7 +95,7 @@ async function run() {
   const diagramsHeader = page.locator('h2', { hasText: 'Mermaid' }).first();
   if (await diagramsHeader.count() > 0) {
     await diagramsHeader.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(1000);
     const shot4 = path.join(SCREENSHOTS_DIR, '04-offline-diagrams.png');
     await page.screenshot({ path: shot4 });
     console.log('Saved:', shot4);
@@ -122,14 +125,7 @@ async function run() {
   await vTableWrap.hover();
   await vPage.waitForTimeout(400);
 
-  // Click Copy Markdown
-  const copyBtn = vPage.locator('.viewmd-table-toolbar button', { hasText: 'Copy Markdown' }).first();
-  if (await copyBtn.count() > 0) {
-    await copyBtn.click({ force: true });
-    await vPage.waitForTimeout(600);
-  }
-
-  // Smooth horizontal scroll right then left
+  // Smooth horizontal scroll right then left (clean demo without button click glitches)
   await vPage.evaluate(async () => {
     const wrap = document.querySelector('.viewmd-table-wrap');
     if (!wrap) return;

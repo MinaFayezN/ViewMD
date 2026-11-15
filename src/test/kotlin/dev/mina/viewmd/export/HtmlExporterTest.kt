@@ -87,4 +87,17 @@ class HtmlExporterTest {
         val bodyCount = Regex("<body[^>]*>", RegexOption.IGNORE_CASE).findAll(html).count()
         assertEquals(1, bodyCount)
     }
+
+    @Test
+    fun testGenerateStandaloneHtmlEscapesTitleHtml() {
+        val html = HtmlExporter.generateStandaloneHtml(
+            title = "<script>alert('xss')</script>",
+            bodyHtml = "<p>Clean content</p>",
+            project = null,
+            isDark = false
+        )
+
+        assertTrue(html.contains("&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"))
+        assertFalse(html.contains("<title><script>"))
+    }
 }

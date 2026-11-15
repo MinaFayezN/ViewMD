@@ -28,7 +28,13 @@ import java.util.LinkedHashMap
 
 object PlantUmlRenderer {
 
+    init {
+        System.setProperty("PLANTUML_SECURITY_PROFILE", "SANDBOX")
+    }
+
     private const val MAX_CACHE_SIZE = 200
+
+    private val FORBIDDEN_DIRECTIVES = Regex("(?im)^\\s*!(include|includesub|import|load_path|dirpath|define_from_file)\\b")
 
     private val lock = Any()
     private val cache = object : LinkedHashMap<String, String>(MAX_CACHE_SIZE, 0.75f, true) {
@@ -47,6 +53,10 @@ object PlantUmlRenderer {
             trimmed
         } else {
             "@startuml\n$trimmed\n@enduml"
+        }
+
+        if (FORBIDDEN_DIRECTIVES.containsMatchIn(pumlSource)) {
+            return Result.failure(SecurityException("PlantUML inclusion directives (!include/!import) are disabled for security"))
         }
 
         val cacheKey = sha256(pumlSource)

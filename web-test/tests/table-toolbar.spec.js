@@ -54,4 +54,24 @@ test.describe('Table Toolbar', () => {
     expect(tsvResult.text).toBe('Copied!');
     expect(tsvResult.clipboard).toContain('Col 1\tCol 2');
   });
+
+  test('copy button reverts to original label after 1500ms timeout', async ({ page }) => {
+    const html = buildHtml(`
+      <table>
+        <thead><tr><th>Col 1</th></tr></thead>
+        <tbody><tr><td>Val</td></tr></tbody>
+      </table>
+    `);
+    await loadHtml(page, html);
+
+    const copyBtn = page.locator('.viewmd-table-toolbar button').first();
+    await expect(copyBtn).toHaveText('Copy Markdown');
+
+    await copyBtn.click();
+    await expect(copyBtn).toHaveText('Copied!');
+
+    // Wait past the 1500ms timeout
+    await page.waitForTimeout(1600);
+    await expect(copyBtn).toHaveText('Copy Markdown');
+  });
 });

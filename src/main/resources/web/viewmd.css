@@ -34,7 +34,7 @@
   --viewmd-col-first-min: 14ch;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"], :root[data-theme="dark"], body.theme-dark, body.dark-theme, body.darcula, html.theme-dark, html.dark, html[data-theme="dark"] {
   color-scheme: dark;
   --viewmd-fg: #e6edf3;
   --viewmd-bg: #0d1117;
@@ -142,6 +142,8 @@ blockquote {
   table-layout: auto;
   border-spacing: 0;
   margin: 0;
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
 }
 
 .viewmd-table-wrap th,
@@ -152,6 +154,7 @@ blockquote {
   vertical-align: top;
   overflow-wrap: break-word;
   border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-fg);
 }
 
 .viewmd-table-wrap th:first-child,
@@ -167,7 +170,8 @@ blockquote {
 
 .viewmd-table-wrap th {
   font-weight: 600;
-  background: var(--viewmd-soft);
+  background-color: var(--viewmd-soft);
+  color: var(--viewmd-fg);
   text-align: left;
   position: sticky;
   top: 0;
@@ -175,7 +179,13 @@ blockquote {
 }
 
 .viewmd-table-wrap tbody tr:nth-child(even) {
-  background-color: var(--viewmd-soft);
+  background-color: var(--viewmd-table-stripe);
+  color: var(--viewmd-fg);
+}
+
+.viewmd-table-wrap tbody tr:nth-child(odd) {
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
 }
 
 /* Front matter card (R-FM-1..4) */
@@ -323,9 +333,9 @@ pre:hover .viewmd-copy-btn {
   border-color: var(--viewmd-link);
 }
 
-html, body {
-  background-color: var(--viewmd-bg) !important;
-  color: var(--viewmd-fg) !important;
+body {
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
 }
 
 a {
@@ -335,23 +345,4 @@ a {
 
 a:hover {
   text-decoration: underline;
-}
-
-.viewmd-table-wrap tbody tr:nth-child(even) {
-  background-color: var(--viewmd-table-stripe) !important;
-}
-
-.viewmd-table-wrap tbody tr:nth-child(odd) {
-  background-color: var(--viewmd-bg) !important;
-}
-
-.viewmd-table-wrap th {
-  background-color: var(--viewmd-soft) !important;
-  color: var(--viewmd-fg) !important;
-  border-color: var(--viewmd-table-border) !important;
-}
-
-.viewmd-table-wrap td {
-  color: var(--viewmd-fg) !important;
-  border-color: var(--viewmd-table-border) !important;
 }

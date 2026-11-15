@@ -35,6 +35,8 @@ sealed class CssStatus {
 
 object CssResolver {
 
+    const val MAX_CSS_SIZE_BYTES = 5 * 1024 * 1024L // 5 MB
+
     fun resolve(rawPath: String?, project: Project?): CssStatus {
         val trimmed = rawPath?.trim().orEmpty()
         if (trimmed.isEmpty()) {
@@ -57,6 +59,25 @@ object CssResolver {
             return CssStatus.NotReadable(path, "Target path is a directory, not a CSS file")
         }
 
+        if (!Files.isRegularFile(path)) {
+            return CssStatus.NotReadable(path, "Target path is not a regular file")
+        }
+
+        val fileName = path.fileName?.toString().orEmpty()
+        if (!fileName.lowercase().endsWith(".css")) {
+            return CssStatus.NotReadable(path, "Custom stylesheet must have a .css extension")
+        }
+
+        val realPath = try {
+            path.toRealPath()
+        } catch (e: Exception) {
+            return CssStatus.NotReadable(path, "Failed to resolve canonical path: ${e.message}")
+        }
+
+        if (!realPath.fileName?.toString().orEmpty().lowercase().endsWith(".css")) {
+            return CssStatus.NotReadable(path, "Canonical target must have a .css extension")
+        }
+
         if (!Files.isReadable(path)) {
             return CssStatus.NotReadable(path, "File permissions prevent reading")
         }
@@ -65,6 +86,10 @@ object CssResolver {
             Files.size(path)
         } catch (e: Exception) {
             return CssStatus.NotReadable(path, e.message ?: "Could not determine file size")
+        }
+
+        if (size > MAX_CSS_SIZE_BYTES) {
+            return CssStatus.NotReadable(path, "File size exceeds 5MB limit ($size bytes)")
         }
 
         if (size == 0L) {

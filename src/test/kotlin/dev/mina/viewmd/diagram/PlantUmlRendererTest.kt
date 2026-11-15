@@ -121,4 +121,29 @@ class PlantUmlRendererTest {
             assertEquals(first, svg)
         }
     }
+
+    @Test
+    fun testRejectsIncludeDirectiveWithSecurityException() {
+        val puml = """
+            !include /etc/passwd
+            class Victim
+        """.trimIndent()
+        val result = PlantUmlRenderer.renderToSvg(puml)
+        assertTrue(result.isFailure)
+        val ex = result.exceptionOrNull()
+        assertTrue(ex is SecurityException)
+        assertTrue(ex?.message?.contains("PlantUML inclusion directives") == true)
+    }
+
+    @Test
+    fun testRejectsImportDirectiveWithSecurityException() {
+        val puml = """
+            !import styles.puml
+            Alice -> Bob: hello
+        """.trimIndent()
+        val result = PlantUmlRenderer.renderToSvg(puml)
+        assertTrue(result.isFailure)
+        val ex = result.exceptionOrNull()
+        assertTrue(ex is SecurityException)
+    }
 }

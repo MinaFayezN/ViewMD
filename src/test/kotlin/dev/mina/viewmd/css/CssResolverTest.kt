@@ -110,4 +110,47 @@ class CssResolverTest {
             // Symlinks may not be supported on some file systems; safely pass
         }
     }
+
+    @Test
+    fun testRejectsNonCssExtension() {
+        val txtFile = tempFolder.newFile("style.txt")
+        txtFile.writeText("body { color: red; }")
+
+        val status = CssResolver.resolve(txtFile.absolutePath, null)
+        assertTrue(status is CssStatus.NotReadable)
+        val notReadable = status as CssStatus.NotReadable
+        assertTrue(notReadable.reason.contains(".css extension"))
+    }
+
+    @Test
+    fun testRejectsSymlinkTargetingNonCss() {
+        val targetTxt = tempFolder.newFile("secret.txt")
+        targetTxt.writeText("secret content")
+
+        val symlinkPath = tempFolder.root.toPath().resolve("sneaky.css")
+        try {
+            Files.createSymbolicLink(symlinkPath, targetTxt.toPath())
+            val status = CssResolver.resolve(symlinkPath.toString(), null)
+            assertTrue(status is CssStatus.NotReadable)
+            val notReadable = status as CssStatus.NotReadable
+            assertTrue(notReadable.reason.contains(".css extension"))
+        } catch (_: UnsupportedOperationException) {
+            // Symlinks may not be supported; pass cleanly
+        }
+    }
+
+    @Test
+    fun testRejectsOversizedCssFile() {
+        val largeFile = tempFolder.newFile("huge.css")
+        // Create sparse file or write dummy bytes over 5MB
+        val channel = java.io.RandomAccessFile(largeFile, "rw").channel
+        channel.position(CssResolver.MAX_CSS_SIZE_BYTES + 1024L)
+        channel.write(java.nio.ByteBuffer.wrap(byteArrayOf(1)))
+        channel.close()
+
+        val status = CssResolver.resolve(largeFile.absolutePath, null)
+        assertTrue(status is CssStatus.NotReadable)
+        val notReadable = status as CssStatus.NotReadable
+        assertTrue(notReadable.reason.contains("5MB limit"))
+    }
 }

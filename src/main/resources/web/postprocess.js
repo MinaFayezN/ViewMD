@@ -68,19 +68,30 @@
     let indexed = true;
     const others = [];
 
+    let inTriggers = false;
     lines.forEach((line) => {
+      const trimmed = line.trim();
       const matchSummary = line.match(/^summary:\s*["']?(.*?)["']?$/);
-      const matchTriggers = line.match(/^triggers:\s*\[(.*?)\]/);
+      const matchTriggers = line.match(/^triggers:\s*(?:\[(.*?)\]|"?([^"\]]+)"?)?$/);
       const matchIndex = line.match(/^index:\s*(false|true)/i);
 
       if (matchSummary) {
         summary = matchSummary[1];
-      } else if (matchTriggers) {
-        triggers = matchTriggers[1].split(',').map((t) => t.trim().replace(/^["']|["']$/g, ''));
+        inTriggers = false;
+      } else if (matchTriggers && (matchTriggers[1] || matchTriggers[2])) {
+        const val = matchTriggers[1] || matchTriggers[2];
+        triggers = val.split(',').map((t) => t.trim().replace(/^["']|["']$/g, ''));
+        inTriggers = false;
+      } else if (trimmed === 'triggers:') {
+        inTriggers = true;
+      } else if (inTriggers && trimmed.startsWith('-')) {
+        triggers.push(trimmed.replace(/^-\s*/, '').replace(/^["']|["']$/g, '').trim());
       } else if (matchIndex) {
         indexed = matchIndex[1].toLowerCase() === 'true';
-      } else if (line.trim().length > 0) {
-        others.push(line.trim());
+        inTriggers = false;
+      } else if (trimmed.length > 0) {
+        others.push(trimmed);
+        inTriggers = false;
       }
     });
 
@@ -128,12 +139,26 @@
     container.parentNode.replaceChild(card, container);
   }
 
+  function resolveMermaidApi() {
+    if (typeof window.mermaid !== 'undefined' && typeof window.mermaid.render === 'function') {
+      return window.mermaid;
+    }
+    if (typeof window.extension === 'object' && window.extension) {
+      if (typeof window.extension.mermaid === 'object' && typeof window.extension.mermaid.render === 'function') {
+        window.mermaid = window.extension.mermaid;
+        return window.mermaid;
+      }
+    }
+    return null;
+  }
+
   function renderMermaidDiagrams() {
-    if (typeof window.mermaid === 'undefined') return;
+    const mermaidApi = resolveMermaidApi();
+    if (!mermaidApi) return;
 
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     try {
-      window.mermaid.initialize({
+      mermaidApi.initialize({
         startOnLoad: false,
         theme: isDark ? 'dark' : 'default',
         securityLevel: 'loose'
@@ -194,7 +219,10 @@
     targetElement.classList.add('viewmd-mermaid-rendered');
     if (originalBlock) originalBlock.classList.add('viewmd-mermaid-rendered');
 
-    window.mermaid.render(id, source).then(({ svg }) => {
+    const mermaidApi = resolveMermaidApi();
+    if (!mermaidApi) return;
+
+    mermaidApi.render(id, source).then(({ svg }) => {
       const container = document.createElement('div');
       container.className = 'viewmd-diagram-container';
       container.innerHTML = svg;
@@ -268,28 +296,72 @@
     }
   }
 
+  function detectDarkBackground() {
+    try {
+      let el = document.body;
+      let bg = el ? window.getComputedStyle(el).backgroundColor : null;
+      if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
+        el = document.documentElement;
+        bg = el ? window.getComputedStyle(el).backgroundColor : null;
+      }
+      if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
+        return false;
+      }
+      const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (match) {
+        const r = parseInt(match[1], 10);
+        const g = parseInt(match[2], 10);
+        const b = parseInt(match[3], 10);
+        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+        return luminance < 128;
+      }
+    } catch (e) {}
+    return false;
+  }
+
   function initThemeToggle() {
     const toggleBtn = document.getElementById('viewmd-theme-toggle');
-    if (!toggleBtn || toggleBtn.classList.contains('viewmd-toggle-initialized')) return;
-    toggleBtn.classList.add('viewmd-toggle-initialized');
+    if (toggleBtn && !toggleBtn.classList.contains('viewmd-toggle-initialized')) {
+      toggleBtn.classList.add('viewmd-toggle-initialized');
 
-    toggleBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      const newIsDark = currentTheme !== 'dark';
-      applyTheme(newIsDark);
-      try {
-        localStorage.setItem('viewmd-theme', newIsDark ? 'dark' : 'light');
-      } catch (err) {}
-    });
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newIsDark = currentTheme !== 'dark';
+        applyTheme(newIsDark);
+        try {
+          localStorage.setItem('viewmd-theme', newIsDark ? 'dark' : 'light');
+        } catch (err) {}
+      });
+    }
 
-    // Check localStorage preference on load in browser
+    // Check theme preference or auto-detection
+    let themeApplied = false;
     try {
       const savedTheme = localStorage.getItem('viewmd-theme');
       if (savedTheme === 'dark' || savedTheme === 'light') {
         applyTheme(savedTheme === 'dark');
+        themeApplied = true;
       }
     } catch (err) {}
+
+    if (!themeApplied) {
+      const explicitTheme = document.documentElement.getAttribute('data-theme');
+      if (explicitTheme === 'dark' || explicitTheme === 'light') {
+        applyTheme(explicitTheme === 'dark');
+        themeApplied = true;
+      }
+    }
+
+    if (!themeApplied) {
+      if (detectDarkBackground()) {
+        applyTheme(true);
+        themeApplied = true;
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme(true);
+        themeApplied = true;
+      }
+    }
   }
 
   let customStyleEl = null;
@@ -304,25 +376,29 @@
   }
 
   function applySettings(settings) {
-    if (!settings) return;
+    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return;
     const root = document.documentElement;
 
-    if (settings.maxWidth) {
-      root.style.setProperty('--viewmd-max-width', settings.maxWidth);
+    if (typeof settings.maxWidth === 'string' && /^(\d{2,5}(px|%)|none)$/.test(settings.maxWidth.trim())) {
+      root.style.setProperty('--viewmd-max-width', settings.maxWidth.trim());
     }
-    if (settings.fontSizePx) {
-      root.style.setProperty('--viewmd-font-size', settings.fontSizePx + 'px');
-      document.body.style.fontSize = settings.fontSizePx + 'px';
+    if (typeof settings.fontSizePx === 'number' || (typeof settings.fontSizePx === 'string' && /^\d+$/.test(settings.fontSizePx))) {
+      const size = Math.max(10, Math.min(60, parseInt(settings.fontSizePx, 10)));
+      root.style.setProperty('--viewmd-font-size', size + 'px');
+      document.body.style.fontSize = size + 'px';
     }
-    if (settings.fontFamily) {
-      root.style.setProperty('--viewmd-font-sans', settings.fontFamily);
-      document.body.style.fontFamily = settings.fontFamily;
+    if (typeof settings.fontFamily === 'string' && /^[a-zA-Z0-9\s,._"'-]+$/.test(settings.fontFamily.trim())) {
+      const family = settings.fontFamily.trim();
+      root.style.setProperty('--viewmd-font-sans', family);
+      document.body.style.fontFamily = family;
     }
-    if (settings.colMinChars) {
-      root.style.setProperty('--viewmd-col-min', settings.colMinChars + 'ch');
+    if (typeof settings.colMinChars === 'number' || (typeof settings.colMinChars === 'string' && /^\d+$/.test(settings.colMinChars))) {
+      const cols = Math.max(4, Math.min(100, parseInt(settings.colMinChars, 10)));
+      root.style.setProperty('--viewmd-col-min', cols + 'ch');
     }
-    if (settings.colFirstMinChars) {
-      root.style.setProperty('--viewmd-col-first-min', settings.colFirstMinChars + 'ch');
+    if (typeof settings.colFirstMinChars === 'number' || (typeof settings.colFirstMinChars === 'string' && /^\d+$/.test(settings.colFirstMinChars))) {
+      const firstCols = Math.max(4, Math.min(100, parseInt(settings.colFirstMinChars, 10)));
+      root.style.setProperty('--viewmd-col-first-min', firstCols + 'ch');
     }
 
     if (typeof settings.hideFrontMatterCard === 'boolean') {
@@ -346,14 +422,23 @@
     }
   }
 
+  const ALLOWED_MESSAGE_TYPES = ['THEME_CHANGED', 'SETTINGS_CHANGED', 'CUSTOM_CSS_CHANGED'];
+
   function handleViewMdPayload(payload) {
-    if (!payload) return;
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return;
+    if (!Object.prototype.hasOwnProperty.call(payload, 'type')) return;
+    if (typeof payload.type !== 'string' || !ALLOWED_MESSAGE_TYPES.includes(payload.type)) return;
+
     if (payload.type === 'THEME_CHANGED') {
-      applyTheme(payload.isDark);
+      if (typeof payload.isDark === 'boolean') {
+        applyTheme(payload.isDark);
+      }
     } else if (payload.type === 'SETTINGS_CHANGED') {
       applySettings(payload);
     } else if (payload.type === 'CUSTOM_CSS_CHANGED') {
-      applyCustomCss(payload.css);
+      if (typeof payload.css === 'string') {
+        applyCustomCss(payload.css);
+      }
     }
   }
 

@@ -72,4 +72,19 @@ class ExportHtmlActionTest : BasePlatformTestCase() {
         action.update(event)
         assertFalse(event.presentation.isEnabledAndVisible)
     }
+
+    fun testFindAnchorOrImageGenerators() {
+        val cl = org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil::class.java.classLoader
+        try {
+            val runnerClass = Class.forName("org.intellij.plugins.markdown.extensions.jcef.commandRunner.CommandRunnerExtension", true, cl)
+            val constructor = runnerClass.constructors.first()
+            // Try instantiating with dummy panel or finding what getHtmlForLineRunner returns
+            val m = runnerClass.getDeclaredMethod("getHtmlForLineRunner", Boolean::class.javaPrimitiveType, String::class.java)
+            m.isAccessible = true
+            // CommandRunnerExtension needs a MarkdownHtmlPanel. Let's see if we can instantiate it or inspect bytecode/decompiled info
+            println("METHOD_FOUND: $m")
+        } catch (e: Throwable) {
+            println("RUNNER_CLASS error: $e")
+        }
+    }
 }
