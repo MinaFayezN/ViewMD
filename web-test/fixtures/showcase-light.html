@@ -1,0 +1,1297 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ViewMD Showcase - light</title>
+  <style>/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* ViewMD baseline styles & table layout */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --viewmd-fg: #1f2328;
+  --viewmd-bg: #ffffff;
+  --viewmd-muted: #59636e;
+  --viewmd-line: #d1d9e0;
+  --viewmd-soft: #f6f8fa;
+  --viewmd-code: #eff1f3;
+  --viewmd-link: #0969da;
+  --viewmd-table-border: #d1d9e0;
+  --viewmd-table-stripe: #f6f8fa;
+  --viewmd-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --viewmd-font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --viewmd-col-min: 12ch;
+  --viewmd-col-first-min: 14ch;
+}
+
+[data-theme="dark"], :root[data-theme="dark"], body.theme-dark, body.dark-theme, body.darcula, html.theme-dark, html.dark, html[data-theme="dark"] {
+  color-scheme: dark;
+  --viewmd-fg: #e6edf3;
+  --viewmd-bg: #0d1117;
+  --viewmd-muted: #9198a1;
+  --viewmd-line: #3d444d;
+  --viewmd-soft: #161b22;
+  --viewmd-code: #21262d;
+  --viewmd-link: #4493f8;
+  --viewmd-table-border: #30363d;
+  --viewmd-table-stripe: #161b22;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --viewmd-fg: #e6edf3;
+    --viewmd-bg: #0d1117;
+    --viewmd-muted: #9198a1;
+    --viewmd-line: #3d444d;
+    --viewmd-soft: #161b22;
+    --viewmd-code: #21262d;
+    --viewmd-link: #4493f8;
+    --viewmd-table-border: #30363d;
+    --viewmd-table-stripe: #161b22;
+  }
+}
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* Page baseline per R-LAY-1, 2 */
+body {
+  color: var(--viewmd-fg, inherit);
+  font-family: var(--viewmd-font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 auto;
+  padding: 24px 32px 80px;
+  max-width: var(--viewmd-max-width, 1400px);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+p, li, blockquote {
+  overflow-wrap: anywhere;
+}
+
+/* Typography per R-LAY-2 */
+h1, h2 {
+  border-bottom: 1px solid var(--viewmd-line);
+  padding-bottom: 0.3em;
+}
+
+code {
+  background: var(--viewmd-code);
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-family: var(--viewmd-font-mono);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  background: var(--viewmd-soft);
+  border: 1px solid var(--viewmd-line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  overflow-wrap: normal;
+}
+
+blockquote {
+  margin-left: 0;
+  padding: 0 1em;
+  color: var(--viewmd-muted);
+  border-left: 0.25em solid var(--viewmd-line);
+}
+
+/* Horizontal scroll container for tables (R-TBL-1..4, 8) */
+.viewmd-table-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.viewmd-table-wrap > table {
+  display: table;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  border-spacing: 0;
+  margin: 0;
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
+}
+
+.viewmd-table-wrap th,
+.viewmd-table-wrap td {
+  min-width: var(--viewmd-col-min);
+  max-width: 65ch;
+  padding: 8px 14px;
+  vertical-align: top;
+  overflow-wrap: break-word;
+  border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-fg);
+}
+
+.viewmd-table-wrap th:first-child,
+.viewmd-table-wrap td:first-child {
+  min-width: var(--viewmd-col-first-min);
+}
+
+.viewmd-table-wrap td code,
+.viewmd-table-wrap td a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.viewmd-table-wrap th {
+  font-weight: 600;
+  background-color: var(--viewmd-soft);
+  color: var(--viewmd-fg);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.viewmd-table-wrap tbody tr:nth-child(even) {
+  background-color: var(--viewmd-table-stripe);
+  color: var(--viewmd-fg);
+}
+
+.viewmd-table-wrap tbody tr:nth-child(odd) {
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
+}
+
+/* Front matter card (R-FM-1..4) */
+.viewmd-frontmatter-card {
+  border: 1px solid var(--viewmd-line);
+  border-radius: 6px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  background-color: var(--viewmd-soft);
+  font-size: 13.5px;
+  color: var(--viewmd-muted);
+}
+
+.viewmd-frontmatter-header {
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viewmd-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.15);
+  font-size: 12px;
+}
+
+/* Diagram containers & Error boxes (R-DIA-1..4) */
+.viewmd-diagram-container {
+  display: block;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.viewmd-diagram-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.viewmd-diagram-error {
+  border: 1px solid #cf222e;
+  border-radius: 6px;
+  background-color: rgba(207, 34, 46, 0.08);
+  padding: 12px 16px;
+  margin: 16px 0;
+  color: #cf222e;
+}
+
+.viewmd-diagram-error-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.viewmd-diagram-error-source {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(207, 34, 46, 0.2);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 0;
+  color: inherit;
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+/* Toolbar and copy buttons (R-TBL-6, R-DIA-7) */
+.viewmd-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--viewmd-soft);
+  border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-muted);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+pre:hover .viewmd-copy-btn {
+  opacity: 1;
+}
+
+.viewmd-table-toolbar {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+.viewmd-table-wrap:hover .viewmd-table-toolbar {
+  opacity: 1;
+}
+
+.viewmd-table-toolbar button {
+  background: var(--viewmd-soft);
+  border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-muted);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.viewmd-table-toolbar button:hover,
+.viewmd-copy-btn:hover {
+  color: var(--viewmd-fg);
+  border-color: var(--viewmd-link);
+}
+
+/* Theme toggle button styling for browser exports */
+.viewmd-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--viewmd-soft);
+  color: var(--viewmd-fg);
+  border: 1px solid var(--viewmd-line);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: var(--viewmd-font-sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.viewmd-theme-toggle:hover {
+  background: var(--viewmd-code);
+  border-color: var(--viewmd-link);
+}
+
+body {
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
+}
+
+a {
+  color: var(--viewmd-link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+</style>
+  <style>html, body { background: #ffffff; color: #1f2328; }</style>
+</head>
+<body>
+  <pre class="frontmatter"><code>---
+summary: "ViewMD Showcase: Enhanced Markdown Preview for Android Studio & IntelliJ IDEA featuring horizontal table scrolling, metadata cards, and 100% offline diagrams"
+triggers: [viewmd, preview, tables, diagrams, mermaid, plantuml, custom css, export]
+index: true
+---</code></pre>
+  <h1>ViewMD Showcase &amp; Capabilities Guide</h1>
+<p>Welcome to <strong>ViewMD</strong> — the professional-grade Markdown preview engine built specifically for <strong>Android Studio</strong> and <strong>IntelliJ-based IDEs</strong>. ViewMD transforms static Markdown rendering into a responsive, offline-first developer workspace.</p>
+<hr />
+<h2>1. Feature Comparison &amp; Capability Matrix</h2>
+<p>Wide tables with extensive columns automatically scroll smoothly inside an overflow container with pinned column headers and readable column widths. Hover over the table to reveal the <strong>Copy Markdown</strong> and <strong>Copy TSV</strong> export toolbar.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>ViewMD</th>
+<th>Stock IDE Preview</th>
+<th>Third-Party Plugins</th>
+<th>Offline Engine</th>
+<th>Memory &amp; CPU Safety</th>
+<th>Android Studio 2026.2+</th>
+<th>IntelliJ IDEA 2026.2+</th>
+<th>Export Fidelity</th>
+<th>Production Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Responsive Table Scrolling</strong></td>
+<td>Smooth horizontal scroll; zero squeezed single-letter columns</td>
+<td>Columns squeezed to 1 letter per line</td>
+<td>Often clips or overflows window</td>
+<td>Pure Client CSS/JS (zero remote)</td>
+<td>Zero memory leak; bounded DOM observer</td>
+<td>Supported (Ladybug &amp; Meerkat)</td>
+<td>Supported (Community &amp; Ultimate)</td>
+<td>Standalone HTML with inlined styles</td>
+<td>Verified (VMD-101)</td>
+</tr>
+<tr>
+<td><strong>Table Action Toolbar</strong></td>
+<td>Hover toolbar with 1-click Copy Markdown and Copy TSV</td>
+<td>Not available</td>
+<td>Not available</td>
+<td>Pure Client DOM</td>
+<td>Event listener leak guards with class locks</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Preserved in external browser preview</td>
+<td>Verified (VMD-102)</td>
+</tr>
+<tr>
+<td><strong>YAML Front Matter Cards</strong></td>
+<td>Interactive collapsible cards with trigger badges &amp; status chips</td>
+<td>Raw, unstyled code blocks at top of document</td>
+<td>Often hidden or discarded</td>
+<td>Pure Client DOM parser</td>
+<td>Safe JSON serialization &amp; HTML escaping</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Exported with matching theme styling</td>
+<td>Verified (VMD-103)</td>
+</tr>
+<tr>
+<td><strong>Mermaid Diagram Engine</strong></td>
+<td>Bundled offline Mermaid.js v10.9 with strict CSP isolation</td>
+<td>Requires remote CDN or manual plugin install</td>
+<td>Unbundled CDN downloads</td>
+<td>100% Bundled &amp; Offline</td>
+<td>Strict sandbox; no external requests</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Inlined SVG in standalone exports</td>
+<td>Verified (VMD-104)</td>
+</tr>
+<tr>
+<td><strong>PlantUML Diagram Engine</strong></td>
+<td>In-process PlantUML renderer powered by built-in Smetana engine</td>
+<td>Requires external Graphviz binary installation</td>
+<td>Requires external Graphviz</td>
+<td>Built-in Pure Java Smetana</td>
+<td>Thread-safe LRU cache bounded at 200 SVGs</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Pre-rendered vector SVG export</td>
+<td>Verified (VMD-105)</td>
+</tr>
+<tr>
+<td><strong>Live Custom CSS Reload</strong></td>
+<td>Diagnostics panel for <code>~</code>, relative &amp; absolute paths with live reload</td>
+<td>Frequently fails with &quot;file not found&quot; errors</td>
+<td>Basic or no reload support</td>
+<td>IntelliJ VFS AsyncFileListener</td>
+<td>Auto-refreshed without IDE restart</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>Custom rules injected into export</td>
+<td>Verified (VMD-106)</td>
+</tr>
+<tr>
+<td><strong>Clean Standalone Export</strong></td>
+<td>One-click HTML export sanitizing broken IDE runner anchors &amp; alert icons</td>
+<td>Basic export with broken runner anchors</td>
+<td>Varies by plugin</td>
+<td>Self-contained single-file HTML</td>
+<td>Zero remote dependencies or CDN links</td>
+<td>Supported</td>
+<td>Supported</td>
+<td>100% clean standalone document</td>
+<td>Verified (VMD-107)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Compact Settings &amp; Configuration</h2>
+<p>Narrow tables retain their natural width without artificial stretching across the preview pane:</p>
+<table>
+<thead>
+<tr>
+<th>Setting Key</th>
+<th>Default Value</th>
+<th>Recommended Range</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contentWidthPx</code></td>
+<td><code>980</code></td>
+<td><code>400</code> – <code>3840</code></td>
+<td>Default maximum reading width in pixels</td>
+</tr>
+<tr>
+<td><code>isFullWidth</code></td>
+<td><code>false</code></td>
+<td><code>true</code> / <code>false</code></td>
+<td>Expand preview to 100% of editor pane</td>
+</tr>
+<tr>
+<td><code>colMinChars</code></td>
+<td><code>12</code></td>
+<td><code>8</code> – <code>30</code></td>
+<td>Minimum column character width to prevent squeezing</td>
+</tr>
+<tr>
+<td><code>colFirstMinChars</code></td>
+<td><code>14</code></td>
+<td><code>10</code> – <code>40</code></td>
+<td>Minimum character width for the leading header column</td>
+</tr>
+<tr>
+<td><code>fontSizePx</code></td>
+<td><code>15</code></td>
+<td><code>10</code> – <code>40</code></td>
+<td>Base typography font size in pixels</td>
+</tr>
+<tr>
+<td><code>customCssPath</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Valid <code>.css</code> path</td>
+<td>Optional custom stylesheet with live diagnostics</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Long Unbreakable Identifiers &amp; Tokens</h2>
+<p>Long URLs, hashes, and package paths wrap safely inside cells without blowing out document bounds:</p>
+<table>
+<thead>
+<tr>
+<th>Token Category</th>
+<th>Identifier / Value</th>
+<th>Wrap Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API Endpoint</strong></td>
+<td><code>https://api.viewmd.dev/v1/plugins/marketplace/verification/catalog/android-studio/meerkat?bundle=dev.mina.viewmd&amp;build=2026.2.4</code></td>
+<td>Wraps inside cell without pushing table</td>
+</tr>
+<tr>
+<td><strong>Git SHA-256</strong></td>
+<td><code>e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code></td>
+<td>Breaks cleanly at cell boundaries</td>
+</tr>
+<tr>
+<td><strong>Kotlin Package</strong></td>
+<td><code>dev.mina.viewmd.extensions.ViewMdBrowserPreviewExtension$Provider</code></td>
+<td>Preserves mono formatting</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. 100% Offline Architecture Diagrams</h2>
+<h3>System Architecture Flowchart (Mermaid)</h3>
+<pre><code class="language-mermaid">flowchart LR
+    A[Markdown Source] --&gt; B{Front Matter?}
+    B -- Yes --&gt; C[Metadata Card]
+    B -- No --&gt; D[Document Body]
+    C --&gt; D
+    D --&gt; E[Table Auto-Wrapper]
+    E --&gt; F[Interactive Toolbar]
+    D --&gt; G[Offline Mermaid SVG]
+    D --&gt; H[In-Process PlantUML SVG]
+    F &amp; G &amp; H --&gt; I[JCEF Native Preview]
+</code></pre>
+<h3>Component Interaction Sequence (Mermaid)</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    autonumber
+    actor Developer
+    participant Editor as Android Studio Editor
+    participant ViewMD as ViewMD Engine
+    participant Preview as JCEF Chromium Preview
+
+    Developer-&gt;&gt;Editor: Edit Markdown or Custom CSS
+    Editor-&gt;&gt;ViewMD: VFS Document Change Event
+    ViewMD-&gt;&gt;ViewMD: Parse AST &amp; In-Process PlantUML / Mermaid
+    ViewMD-&gt;&gt;Preview: Inject Responsive CSS &amp; Postprocess DOM
+    Preview--&gt;&gt;Developer: Zero-Flicker Responsive View
+</code></pre>
+<h3>Rendering Pipeline (PlantUML)</h3>
+<pre><code class="language-plantuml">@startuml
+skinparam componentStyle uml2
+skinparam monochrome true
+
+package &quot;ViewMD Plugin&quot; {
+    [Markdown Extension Provider] as MEP
+    [PlantUML Renderer (Smetana)] as PUR
+    [LRU Cache (200 SVG)] as CACHE
+    [CSS Watcher &amp; Resolver] as CWR
+}
+
+package &quot;JCEF Browser Sandbox&quot; {
+    [viewmd.css] as CSS
+    [postprocess.js] as JS
+    [mermaid.min.js] as MERMAID
+}
+
+MEP --&gt; PUR : Parse code fences
+PUR --&gt; CACHE : Query hash
+CACHE --&gt; PUR : Return cached SVG
+MEP --&gt; JS : Send DOM updates
+CWR --&gt; CSS : Hot-reload custom styles
+@enduml
+</code></pre>
+<hr />
+<h2>5. Callouts &amp; Information Alerts</h2>
+<blockquote>
+<p>[!NOTE]
+ViewMD bundles all styling, fonts, and scripts directly inside the plugin archive. No remote HTTP or CDN requests are ever made.</p>
+</blockquote>
+<blockquote>
+<p>[!TIP]
+Press <code>Ctrl + Shift + X</code> (or right-click in editor) to export a standalone HTML document ready for client presentations.</p>
+</blockquote>
+<blockquote>
+<p>[!IMPORTANT]
+Compatible with Android Studio Ladybug, Meerkat, and IntelliJ IDEA 2026.2+ platforms.</p>
+</blockquote>
+<blockquote>
+<p>[!WARNING]
+When defining custom CSS, use CSS variables (such as <code>--viewmd-fg</code> and <code>--viewmd-bg</code>) to maintain seamless dark and light mode synchronization.</p>
+</blockquote>
+<hr />
+<h2>6. Code Blocks with Instant Copy</h2>
+<p>Code blocks feature automatic syntax highlighting, clean margins, and one-click copy buttons:</p>
+<pre><code class="language-kotlin">package dev.mina.viewmd.export
+
+object HtmlUtils {
+    @JvmStatic
+    fun escapeHtml(str: String): String {
+        return str.replace(&quot;&amp;&quot;, &quot;&amp;amp;&quot;)
+            .replace(&quot;&lt;&quot;, &quot;&amp;lt;&quot;)
+            .replace(&quot;&gt;&quot;, &quot;&amp;gt;&quot;)
+            .replace(&quot;\&quot;&quot;, &quot;&amp;quot;&quot;)
+            .replace(&quot;'&quot;, &quot;&amp;#39;&quot;)
+    }
+}
+</code></pre>
+<pre><code class="language-bash"># Verify plugin against target IDE platform
+./gradlew test
+./gradlew clean buildPlugin
+</code></pre>
+<hr />
+<h2>7. Mathematics &amp; Formula Rendering</h2>
+<p>Inline formulas like $E = mc^2$ and standalone mathematical equations render with clean typography:</p>
+<p>$$
+\mathcal{L}<em>{ViewMD} = \sum</em>{i=1}^{N} \left( \text{Readability}_i + \text{Responsiveness}_i \right)
+$$</p>
+<hr />
+<h2>8. Verification &amp; Release Checklist</h2>
+<ul>
+<li>[x] Responsive table horizontal scroll active</li>
+<li>[x] Sticky table headers pinned on vertical scroll</li>
+<li>[x] Quick Copy Markdown and TSV buttons operational</li>
+<li>[x] Collapsible YAML front matter metadata cards rendered</li>
+<li>[x] 100% offline Mermaid flowchart and sequence diagram rendering</li>
+<li>[x] In-process PlantUML vector SVG rendering with LRU caching</li>
+<li>[x] Standalone HTML export sanitization verifying zero broken anchors</li>
+<li>[x] Complete test coverage across Kotlin unit tests and Playwright browser suites</li>
+</ul>
+
+  <script>/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+(function () {
+  'use strict';
+
+  function wrapTables() {
+    const tables = document.querySelectorAll('table:not(.viewmd-wrapped)');
+    if (tables.length === 0) return;
+
+    for (let i = 0; i < tables.length; i++) {
+      const table = tables[i];
+      const parent = table.parentElement;
+      if (parent && parent.classList.contains('viewmd-table-wrap')) {
+        table.classList.add('viewmd-wrapped');
+        continue;
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'viewmd-table-wrap';
+      parent.insertBefore(wrap, table);
+      wrap.appendChild(table);
+      table.classList.add('viewmd-wrapped');
+    }
+  }
+
+  function enhanceFrontMatter() {
+    const detailsFm = document.querySelector('details.fm:not(.viewmd-fm-processed)');
+    if (detailsFm) {
+      detailsFm.classList.add('viewmd-fm-processed');
+      detailsFm.classList.add('viewmd-frontmatter-card');
+      return;
+    }
+
+    const preBlocks = document.querySelectorAll('pre > code');
+    for (let i = 0; i < Math.min(preBlocks.length, 3); i++) {
+      const code = preBlocks[i];
+      const text = (code.textContent || '').trim();
+      if (text.startsWith('summary:') || (text.startsWith('---') && text.includes('summary:'))) {
+        const pre = code.parentElement;
+        if (pre && !pre.classList.contains('viewmd-fm-processed')) {
+          pre.classList.add('viewmd-fm-processed');
+          renderFrontMatterCard(pre, text);
+          break;
+        }
+      }
+    }
+  }
+
+  function renderFrontMatterCard(container, rawText) {
+    const lines = rawText.replace(/^---/, '').replace(/---$/, '').trim().split('\n');
+    let summary = '';
+    let triggers = [];
+    let indexed = true;
+    const others = [];
+
+    let inTriggers = false;
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      const matchSummary = line.match(/^summary:\s*["']?(.*?)["']?$/);
+      const matchTriggers = line.match(/^triggers:\s*(?:\[(.*?)\]|"?([^"\]]+)"?)?$/);
+      const matchIndex = line.match(/^index:\s*(false|true)/i);
+
+      if (matchSummary) {
+        summary = matchSummary[1];
+        inTriggers = false;
+      } else if (matchTriggers && (matchTriggers[1] || matchTriggers[2])) {
+        const val = matchTriggers[1] || matchTriggers[2];
+        triggers = val.split(',').map((t) => t.trim().replace(/^["']|["']$/g, ''));
+        inTriggers = false;
+      } else if (trimmed === 'triggers:') {
+        inTriggers = true;
+      } else if (inTriggers && trimmed.startsWith('-')) {
+        triggers.push(trimmed.replace(/^-\s*/, '').replace(/^["']|["']$/g, '').trim());
+      } else if (matchIndex) {
+        indexed = matchIndex[1].toLowerCase() === 'true';
+        inTriggers = false;
+      } else if (trimmed.length > 0) {
+        others.push(trimmed);
+        inTriggers = false;
+      }
+    });
+
+    const card = document.createElement('details');
+    card.className = 'viewmd-frontmatter-card';
+    card.open = false;
+
+    const summaryEl = document.createElement('summary');
+    summaryEl.className = 'viewmd-frontmatter-header';
+    summaryEl.innerHTML = `<span>Front matter</span> ${!indexed ? '<span class="viewmd-chip" style="background:#cf222e;color:#fff;">Not indexed</span>' : ''}`;
+    card.appendChild(summaryEl);
+
+    const bodyEl = document.createElement('div');
+    bodyEl.style.marginTop = '8px';
+
+    if (summary) {
+      const sumDiv = document.createElement('div');
+      sumDiv.style.marginBottom = '6px';
+      sumDiv.innerHTML = `<strong>Summary:</strong> ${escapeHtml(summary)}`;
+      bodyEl.appendChild(sumDiv);
+    }
+
+    if (triggers.length > 0) {
+      const trigDiv = document.createElement('div');
+      trigDiv.style.marginBottom = '6px';
+      trigDiv.innerHTML = '<strong>Triggers:</strong> ';
+      triggers.forEach((t) => {
+        const chip = document.createElement('span');
+        chip.className = 'viewmd-chip';
+        chip.textContent = t;
+        trigDiv.appendChild(chip);
+      });
+      bodyEl.appendChild(trigDiv);
+    }
+
+    if (others.length > 0) {
+      const otherDiv = document.createElement('pre');
+      otherDiv.style.margin = '4px 0 0';
+      otherDiv.style.padding = '4px 8px';
+      otherDiv.textContent = others.join('\n');
+      bodyEl.appendChild(otherDiv);
+    }
+
+    card.appendChild(bodyEl);
+    container.parentNode.replaceChild(card, container);
+  }
+
+  function resolveMermaidApi() {
+    if (typeof window.mermaid !== 'undefined' && typeof window.mermaid.render === 'function') {
+      return window.mermaid;
+    }
+    if (typeof window.extension === 'object' && window.extension) {
+      if (typeof window.extension.mermaid === 'object' && typeof window.extension.mermaid.render === 'function') {
+        window.mermaid = window.extension.mermaid;
+        return window.mermaid;
+      }
+    }
+    return null;
+  }
+
+  function renderMermaidDiagrams() {
+    const mermaidApi = resolveMermaidApi();
+    if (!mermaidApi) return;
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    try {
+      mermaidApi.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'dark' : 'default',
+        securityLevel: 'loose'
+      });
+    } catch (e) {
+      // Ignore if already initialized
+    }
+
+    // 1. Standalone pre.mermaid blocks
+    const preBlocks = document.querySelectorAll('pre.mermaid:not(.viewmd-mermaid-rendered)');
+    preBlocks.forEach((block, index) => {
+      const source = (block.textContent || '').trim();
+      renderMermaidElement(block, source, `mermaid-pre-${Date.now()}-${index}`);
+    });
+
+    // 2. JetBrains Markdown mermaid fence blocks (<div class="mermaid" data-actual-fence-content="...">)
+    const jbDivBlocks = document.querySelectorAll('div.mermaid[data-actual-fence-content]:not(.viewmd-mermaid-rendered)');
+    jbDivBlocks.forEach((block, index) => {
+      let source = '';
+      const b64 = block.getAttribute('data-actual-fence-content');
+      if (b64) {
+        try {
+          source = decodeURIComponent(escape(window.atob(b64))).trim();
+        } catch (e) {
+          try {
+            source = window.atob(b64).trim();
+          } catch (e2) {
+            source = (block.textContent || '').trim();
+          }
+        }
+      } else {
+        source = (block.textContent || '').trim();
+      }
+
+      // Also clean up any wrapping pre/code parent generated by JetBrains Markdown
+      const parentCode = block.closest('code.language-mermaid');
+      const targetElement = parentCode && parentCode.parentElement && parentCode.parentElement.tagName === 'PRE'
+        ? parentCode.parentElement
+        : (parentCode || block);
+
+      renderMermaidElement(targetElement, source, `mermaid-jb-${Date.now()}-${index}`, block);
+    });
+
+    // 3. Generic code.language-mermaid blocks
+    const codeBlocks = document.querySelectorAll('code.language-mermaid:not(.viewmd-mermaid-rendered)');
+    codeBlocks.forEach((block, index) => {
+      if (block.querySelector('div.mermaid[data-actual-fence-content]')) return;
+      const source = (block.textContent || '').trim();
+      const targetElement = block.parentElement && block.parentElement.tagName === 'PRE'
+        ? block.parentElement
+        : block;
+      renderMermaidElement(targetElement, source, `mermaid-code-${Date.now()}-${index}`, block);
+    });
+  }
+
+  function renderMermaidElement(targetElement, source, id, originalBlock) {
+    if (!source) return;
+    targetElement.classList.add('viewmd-mermaid-rendered');
+    if (originalBlock) originalBlock.classList.add('viewmd-mermaid-rendered');
+
+    const mermaidApi = resolveMermaidApi();
+    if (!mermaidApi) return;
+
+    mermaidApi.render(id, source).then(({ svg }) => {
+      const container = document.createElement('div');
+      container.className = 'viewmd-diagram-container';
+      container.innerHTML = svg;
+      targetElement.parentNode.replaceChild(container, targetElement);
+    }).catch((err) => {
+      console.warn('Mermaid rendering failed for:', source, err);
+      const errDiv = document.createElement('div');
+      errDiv.className = 'viewmd-diagram-error';
+      errDiv.innerHTML = `
+        <div class="viewmd-diagram-error-title">Mermaid rendering error</div>
+        <pre class="viewmd-diagram-error-source"><code>${escapeHtml(source)}</code></pre>
+      `;
+      targetElement.parentNode.replaceChild(errDiv, targetElement);
+    });
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>'"]/g, (tag) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;',
+    }[tag] || tag));
+  }
+
+  function applyTheme(isDark) {
+    const root = document.documentElement;
+    if (isDark) {
+      root.setAttribute('data-theme', 'dark');
+      root.style.setProperty('color-scheme', 'dark');
+      root.style.setProperty('--viewmd-fg', '#e6edf3');
+      root.style.setProperty('--viewmd-bg', '#0d1117');
+      root.style.setProperty('--viewmd-soft', '#161b22');
+      root.style.setProperty('--viewmd-line', '#3d444d');
+      root.style.setProperty('--viewmd-code', '#21262d');
+      root.style.setProperty('--viewmd-link', '#4493f8');
+      root.style.setProperty('--viewmd-table-border', '#30363d');
+      root.style.setProperty('--viewmd-table-stripe', '#161b22');
+    } else {
+      root.setAttribute('data-theme', 'light');
+      root.style.setProperty('color-scheme', 'light');
+      root.style.setProperty('--viewmd-fg', '#1f2328');
+      root.style.setProperty('--viewmd-bg', '#ffffff');
+      root.style.setProperty('--viewmd-soft', '#f6f8fa');
+      root.style.setProperty('--viewmd-line', '#d1d9e0');
+      root.style.setProperty('--viewmd-code', '#eff1f3');
+      root.style.setProperty('--viewmd-link', '#0969da');
+      root.style.setProperty('--viewmd-table-border', '#d1d9e0');
+      root.style.setProperty('--viewmd-table-stripe', '#f6f8fa');
+    }
+
+    const toggleBtn = document.getElementById('viewmd-theme-toggle');
+    const toggleIcon = document.getElementById('viewmd-theme-icon');
+    const toggleText = document.getElementById('viewmd-theme-text');
+    if (toggleIcon) toggleIcon.textContent = isDark ? '☀️' : '🌙';
+    if (toggleText) toggleText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+
+    if (typeof window.mermaid !== 'undefined') {
+      try {
+        window.mermaid.initialize({
+          theme: isDark ? 'dark' : 'default',
+          securityLevel: 'loose'
+        });
+      } catch (e) {
+      }
+      // Trigger diagram color refresh on existing SVGs
+      document.querySelectorAll('.viewmd-diagram-container').forEach((c) => {
+        // SVG styling updates smoothly via CSS variables
+      });
+    }
+  }
+
+  function detectDarkBackground() {
+    try {
+      let el = document.body;
+      let bg = el ? window.getComputedStyle(el).backgroundColor : null;
+      if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
+        el = document.documentElement;
+        bg = el ? window.getComputedStyle(el).backgroundColor : null;
+      }
+      if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
+        return false;
+      }
+      const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (match) {
+        const r = parseInt(match[1], 10);
+        const g = parseInt(match[2], 10);
+        const b = parseInt(match[3], 10);
+        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+        return luminance < 128;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function initThemeToggle() {
+    const toggleBtn = document.getElementById('viewmd-theme-toggle');
+    if (toggleBtn && !toggleBtn.classList.contains('viewmd-toggle-initialized')) {
+      toggleBtn.classList.add('viewmd-toggle-initialized');
+
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newIsDark = currentTheme !== 'dark';
+        applyTheme(newIsDark);
+        try {
+          localStorage.setItem('viewmd-theme', newIsDark ? 'dark' : 'light');
+        } catch (err) {}
+      });
+    }
+
+    // Check theme preference or auto-detection
+    let themeApplied = false;
+    try {
+      const savedTheme = localStorage.getItem('viewmd-theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        applyTheme(savedTheme === 'dark');
+        themeApplied = true;
+      }
+    } catch (err) {}
+
+    if (!themeApplied) {
+      const explicitTheme = document.documentElement.getAttribute('data-theme');
+      if (explicitTheme === 'dark' || explicitTheme === 'light') {
+        applyTheme(explicitTheme === 'dark');
+        themeApplied = true;
+      }
+    }
+
+    if (!themeApplied) {
+      if (detectDarkBackground()) {
+        applyTheme(true);
+        themeApplied = true;
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme(true);
+        themeApplied = true;
+      }
+    }
+  }
+
+  let customStyleEl = null;
+
+  function applyCustomCss(cssText) {
+    if (!customStyleEl) {
+      customStyleEl = document.createElement('style');
+      customStyleEl.id = 'viewmd-custom-user-style';
+      document.head.appendChild(customStyleEl);
+    }
+    customStyleEl.textContent = cssText || '';
+  }
+
+  function applySettings(settings) {
+    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return;
+    const root = document.documentElement;
+
+    if (typeof settings.maxWidth === 'string' && /^(\d{2,5}(px|%)|none)$/.test(settings.maxWidth.trim())) {
+      root.style.setProperty('--viewmd-max-width', settings.maxWidth.trim());
+    }
+    if (typeof settings.fontSizePx === 'number' || (typeof settings.fontSizePx === 'string' && /^\d+$/.test(settings.fontSizePx))) {
+      const size = Math.max(10, Math.min(60, parseInt(settings.fontSizePx, 10)));
+      root.style.setProperty('--viewmd-font-size', size + 'px');
+      document.body.style.fontSize = size + 'px';
+    }
+    if (typeof settings.fontFamily === 'string' && /^[a-zA-Z0-9\s,._"'-]+$/.test(settings.fontFamily.trim())) {
+      const family = settings.fontFamily.trim();
+      root.style.setProperty('--viewmd-font-sans', family);
+      document.body.style.fontFamily = family;
+    }
+    if (typeof settings.colMinChars === 'number' || (typeof settings.colMinChars === 'string' && /^\d+$/.test(settings.colMinChars))) {
+      const cols = Math.max(4, Math.min(100, parseInt(settings.colMinChars, 10)));
+      root.style.setProperty('--viewmd-col-min', cols + 'ch');
+    }
+    if (typeof settings.colFirstMinChars === 'number' || (typeof settings.colFirstMinChars === 'string' && /^\d+$/.test(settings.colFirstMinChars))) {
+      const firstCols = Math.max(4, Math.min(100, parseInt(settings.colFirstMinChars, 10)));
+      root.style.setProperty('--viewmd-col-first-min', firstCols + 'ch');
+    }
+
+    if (typeof settings.hideFrontMatterCard === 'boolean') {
+      const cards = document.querySelectorAll('.viewmd-frontmatter-card');
+      cards.forEach((card) => {
+        card.style.display = settings.hideFrontMatterCard ? 'none' : '';
+      });
+    }
+
+    if (typeof settings.expandFrontMatterCard === 'boolean') {
+      const cards = document.querySelectorAll('.viewmd-frontmatter-card');
+      cards.forEach((card) => {
+        if (!settings.hideFrontMatterCard) {
+          card.open = settings.expandFrontMatterCard;
+        }
+      });
+    }
+
+    if (typeof settings.customCss === 'string') {
+      applyCustomCss(settings.customCss);
+    }
+  }
+
+  const ALLOWED_MESSAGE_TYPES = ['THEME_CHANGED', 'SETTINGS_CHANGED', 'CUSTOM_CSS_CHANGED'];
+
+  function handleViewMdPayload(payload) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return;
+    if (!Object.prototype.hasOwnProperty.call(payload, 'type')) return;
+    if (typeof payload.type !== 'string' || !ALLOWED_MESSAGE_TYPES.includes(payload.type)) return;
+
+    if (payload.type === 'THEME_CHANGED') {
+      if (typeof payload.isDark === 'boolean') {
+        applyTheme(payload.isDark);
+      }
+    } else if (payload.type === 'SETTINGS_CHANGED') {
+      applySettings(payload);
+    } else if (payload.type === 'CUSTOM_CSS_CHANGED') {
+      if (typeof payload.css === 'string') {
+        applyCustomCss(payload.css);
+      }
+    }
+  }
+
+  window.addEventListener('message', (event) => {
+    if (!event.data) return;
+    try {
+      const payload = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      handleViewMdPayload(payload);
+    } catch (e) {
+    }
+  });
+
+  // Subscribe to JetBrains JCEF MessagePipe if present
+  if (window.__IntelliJTools && window.__IntelliJTools.messagePipe) {
+    try {
+      window.__IntelliJTools.messagePipe.subscribe('viewmd:event', (data) => {
+        try {
+          const payload = typeof data === 'string' ? JSON.parse(data) : data;
+          handleViewMdPayload(payload);
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
+
+  function addCopyButtonsToCodeBlocks() {
+    const pres = document.querySelectorAll('pre:not(.viewmd-copy-ready)');
+    pres.forEach((pre) => {
+      pre.classList.add('viewmd-copy-ready');
+      const btn = document.createElement('button');
+      btn.className = 'viewmd-copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const code = pre.querySelector('code');
+        const text = code ? code.textContent : pre.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        } catch (err) {
+          btn.textContent = 'Failed';
+        }
+      });
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }
+
+  function addTableToolbar() {
+    const wraps = document.querySelectorAll('.viewmd-table-wrap:not(.viewmd-toolbar-ready)');
+    wraps.forEach((wrap) => {
+      wrap.classList.add('viewmd-toolbar-ready');
+      wrap.style.position = 'relative';
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'viewmd-table-toolbar';
+
+      const copyMdBtn = document.createElement('button');
+      copyMdBtn.textContent = 'Copy Markdown';
+      copyMdBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const table = wrap.querySelector('table');
+        if (!table) return;
+        const mdText = tableToMarkdown(table);
+        try {
+          await navigator.clipboard.writeText(mdText);
+          copyMdBtn.textContent = 'Copied!';
+          setTimeout(() => { copyMdBtn.textContent = 'Copy Markdown'; }, 1500);
+        } catch (err) {
+          copyMdBtn.textContent = 'Failed';
+        }
+      });
+
+      const copyTsvBtn = document.createElement('button');
+      copyTsvBtn.textContent = 'Copy TSV';
+      copyTsvBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const table = wrap.querySelector('table');
+        if (!table) return;
+        const tsvText = tableToTsv(table);
+        try {
+          await navigator.clipboard.writeText(tsvText);
+          copyTsvBtn.textContent = 'Copied!';
+          setTimeout(() => { copyTsvBtn.textContent = 'Copy TSV'; }, 1500);
+        } catch (err) {
+          copyTsvBtn.textContent = 'Failed';
+        }
+      });
+
+      toolbar.appendChild(copyMdBtn);
+      toolbar.appendChild(copyTsvBtn);
+      wrap.appendChild(toolbar);
+    });
+  }
+
+  function tableToMarkdown(table) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    return rows.map((r) => {
+      const cells = Array.from(r.querySelectorAll('th, td')).map((c) => (c.textContent || '').trim().replace(/\|/g, '\\|'));
+      return `| ${cells.join(' | ')} |`;
+    }).join('\n');
+  }
+
+  function tableToTsv(table) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    return rows.map((r) => {
+      const cells = Array.from(r.querySelectorAll('th, td')).map((c) => (c.textContent || '').trim().replace(/\t/g, ' '));
+      return cells.join('\t');
+    }).join('\n');
+  }
+
+  function cleanExternalBrowserArtifacts() {
+    const isExternalBrowser = typeof window.__IntelliJTools === 'undefined';
+    if (isExternalBrowser) {
+      // 1. Remove IDE command runner links that scroll to # with broken images
+      document.querySelectorAll('a[data-command], a.run-icon, a.run-icon-line').forEach((el) => el.remove());
+      // 2. Remove duplicate/broken IDE copy buttons
+      document.querySelectorAll('.code-fence-highlighter-copy-button').forEach((el) => el.remove());
+    }
+
+    // 3. Neutralize broken alert icons pointing to relative alertIcons/*.png (order-independent)
+    document.querySelectorAll('img.markdown-alert-icon, img[src*="alertIcons/"]').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (src.includes('alertIcons/')) {
+        const match = src.match(/alertIcons\/([a-zA-Z]+)\.png/i);
+        const type = match ? match[1].toLowerCase() : 'note';
+        const emojiMap = { note: 'ℹ️', tip: '💡', important: '❗', warning: '⚠️', caution: '🛑' };
+        const span = document.createElement('span');
+        span.className = 'viewmd-alert-icon';
+        span.style.marginRight = '8px';
+        span.textContent = emojiMap[type] || 'ℹ️';
+        img.parentNode.replaceChild(span, img);
+      }
+    });
+
+    // 4. Remove any commandRunner images or broken images inside anchors
+    document.querySelectorAll('img[src*="commandRunner/"]').forEach((img) => {
+      const parentLink = img.closest('a');
+      if (parentLink && (parentLink.getAttribute('href') === '#' || parentLink.hasAttribute('data-command'))) {
+        parentLink.remove();
+      } else {
+        img.remove();
+      }
+    });
+
+    // 5. Strip all headless <img> elements (missing src, empty src, or copy button icons)
+    document.querySelectorAll('img:not([src]), img[src=""], img.code-fence-highlighter-copy-button-icon').forEach((el) => {
+      el.remove();
+    });
+
+    // 6. Prune any orphaned <a href="#"> links that contain no text and no remaining element children
+    document.querySelectorAll('a[href="#"]').forEach((el) => {
+      if (!el.textContent.trim() && el.children.length === 0) {
+        el.remove();
+      }
+    });
+  }
+
+  function run() {
+    cleanExternalBrowserArtifacts();
+    initThemeToggle();
+    wrapTables();
+    enhanceFrontMatter();
+    renderMermaidDiagrams();
+    addTableToolbar();
+    addCopyButtonsToCodeBlocks();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+
+  let debounceTimer = null;
+  const observer = new MutationObserver(() => {
+    if (debounceTimer) return;
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      cleanExternalBrowserArtifacts();
+      initThemeToggle();
+      wrapTables();
+      renderMermaidDiagrams();
+      addTableToolbar();
+      addCopyButtonsToCodeBlocks();
+    }, 50);
+  });
+
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+})();
+</script>
+</body>
+</html>

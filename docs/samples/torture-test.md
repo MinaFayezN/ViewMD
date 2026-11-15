@@ -16,9 +16,9 @@ letter-per-line wrapping.
 
 | ID | Area | Requirement | Owner | Status | Priority | Ticket | Risk | Evidence | Notes | Last update | Next step |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| R-001 | Tables | Wide tables scroll horizontally instead of squeezing columns into one-letter lines | Mina | In progress | P0 | TM-19602 | Medium: depends on CSS specificity in the stock preview | `docs/images/baseline/wide-900.png` | Verified in Android Studio 2026.2.2 sandbox with a 12 column fixture and a long paragraph in every cell to force wrapping | 2026-11-10 | Add the sticky header and capture the 400 px screenshot |
-| R-002 | Front matter | Render `summary` as text and `triggers` as chips in a collapsed card | Mina | Not started | P0 | TM-19603 | Low | n/a | Invalid YAML must show a warning and still render the body | 2026-11-10 | Write the parser spike |
-| R-003 | Diagrams | Mermaid and PlantUML render offline | Mina | Not started | P0 | TM-19604 | High: PlantUML may need Graphviz | n/a | Compare in-process jar vs the IDE plugin | 2026-11-10 | Spike C |
+| R-001 | Tables | Wide tables scroll horizontally instead of squeezing columns into one-letter lines | Platform Team | In progress | P0 | VMD-101 | Medium: depends on CSS specificity in the stock preview | `docs/images/baseline/wide-900.png` | Verified in Android Studio 2026.2.2 sandbox with a 12 column fixture and a long paragraph in every cell to force wrapping | 2026-11-10 | Add the sticky header and capture the 400 px screenshot |
+| R-002 | Front matter | Render `summary` as text and `triggers` as chips in a collapsed card | Platform Team | Not started | P0 | VMD-102 | Low | n/a | Invalid YAML must show a warning and still render the body | 2026-11-10 | Write the parser spike |
+| R-003 | Diagrams | Mermaid and PlantUML render offline | Platform Team | Not started | P0 | VMD-103 | High: PlantUML may need Graphviz | n/a | Compare in-process jar vs the IDE plugin | 2026-11-10 | Spike C |
 
 ## 2. Narrow table
 
@@ -43,9 +43,9 @@ Correct: tokens wrap inside the cell (`overflow-wrap:anywhere`) and never push t
 
 | Kind | Value |
 |---|---|
-| URL | https://thrivemarket.atlassian.net/wiki/spaces/TECH/pages/4888788998/Prism+Architecture+Design+Reference?focusedCommentId=123456789 |
+| URL | https://example.com/api/v1/reference/table-rendering-spec?param=long-token-parameter-value-wrap-test |
 | SHA-256 | 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b |
-| Path | thrive-market-app/app/src/main/java/com/thrivemarket/app/feature/checkout/presentation/viewmodel/CheckoutViewModel.kt |
+| Path | dev/mina/viewmd/feature/table/presentation/viewmodel/TableViewModel.kt |
 
 ## 5. Table with many short columns (20)
 
@@ -129,7 +129,7 @@ data class FeatureUiState(val isLoading: Boolean, val errorMessage: String?)
 ```
 
 ```bash
-./gradlew :app:testDebugUnitTest --tests "com.thrivemarket.app.feature.ClassNameTest"
+./gradlew test --tests "dev.mina.viewmd.feature.TableFeatureTest"
 ```
 
 A very long single line in a fence must scroll inside the block, not the page:

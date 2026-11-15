@@ -61,14 +61,14 @@ Inspect custom stylesheet resolution in real-time (`Valid`, `Empty`, `Not Found`
 Search for **ViewMD** under `Settings > Plugins > Marketplace` and click **Install**.
 
 ### Manual Installation (From Distribution ZIP)
-1. Download `ViewMD-1.0.0.zip` from [Releases](https://github.com/mina/ViewMD/releases).
+1. Download `ViewMD-1.0.0.zip` from [Releases](https://github.com/MinaFayezN/ViewMD/releases).
 2. Open Android Studio / IntelliJ IDEA.
 3. Go to `Settings > Plugins > ⚙ (gear icon) > Install Plugin from Disk...`.
 4. Select `ViewMD-1.0.0.zip` and restart the IDE if prompted.
 
 ### From Source
 ```bash
-git clone https://github.com/mina/ViewMD.git
+git clone https://github.com/MinaFayezN/ViewMD.git
 cd ViewMD
 ./gradlew buildPlugin
 ```

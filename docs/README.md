@@ -1,21 +1,19 @@
 ---
-summary: "Index of the ViewMD planning docs: prompt for the IntelliJ agent, plan, requirements, architecture, acceptance, fixtures"
-triggers: [starting ViewMD work, finding a ViewMD planning doc]
+summary: "Index of the ViewMD documentation: plan, requirements, architecture, acceptance, and fixtures"
+triggers: [viewmd documentation, architecture, requirements]
 ---
 
-# ViewMD docs
+# ViewMD Documentation
 
-Read in this order. The agent prompt links the rest.
+Comprehensive reference documentation for ViewMD architecture, requirements, specifications, and test fixtures.
 
-| File | What it is |
+| Document | Purpose |
 |---|---|
-| [AGENT_PROMPT.md](AGENT_PROMPT.md) | The prompt to paste into the IntelliJ agent |
-| [PLAN.md](PLAN.md) | Phases 0-6 with checkboxes, decision points and risks |
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Field problems F1-F8 and prioritised requirements (R-*) |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Approach A vs B, layers, table layout strategy, security, tests |
-| [ACCEPTANCE.md](ACCEPTANCE.md) | Exit gates G0-G6 |
-| [DOCUMENTATION_PLAN.md](DOCUMENTATION_PLAN.md) | README, user and developer guides, ADRs, release docs |
-| [samples/torture-test.md](samples/torture-test.md) | Rendering fixture used in every phase |
-| [reference/baseline.css](reference/baseline.css) | Working table/typography CSS from the `mdview` prototype |
-| [reference/mdview-prototype.py](reference/mdview-prototype.py) | Python prototype: Markdown to HTML in a browser, front matter in a details block |
-| `adr/`, `images/` | Decisions and screenshots, filled in during the work |
+| [PLAN.md](PLAN.md) | Phases 0-6 delivery plan with checkboxes, decision points, and risk log |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Field problems F1-F8 and prioritised feature requirements (R-*) |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Architectural layers, table layout strategy, security model, and test tiers |
+| [ACCEPTANCE.md](ACCEPTANCE.md) | Quality gates and acceptance criteria (G0-G6) |
+| [DOCUMENTATION_PLAN.md](DOCUMENTATION_PLAN.md) | Overview of documentation structure and release guides |
+| [samples/torture-test.md](samples/torture-test.md) | Multi-viewport rendering fixture for visual quality assurance |
+| [reference/baseline.css](reference/baseline.css) | Core CSS variables and table layout baseline |
+| `adr/`, `images/` | Architecture Decision Records and visual documentation assets |

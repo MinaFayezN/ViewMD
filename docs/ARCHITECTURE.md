@@ -74,7 +74,7 @@ prevents one-letter columns. Verify with the torture test in a 400 px, 900 px an
 
 - Platform Gradle plugin 2.x. Declare `intellijIdea("2026.2.4")` for compile and add `androidStudio(...)` as a second
   verification target. Use `pluginVerification { ides { ... } }` for each supported product.
-- Kotlin jvmTarget and `-release` follow the IDE's JBR, not the build JDK (see `AGENT_PROMPT.md`).
+- Kotlin jvmTarget and `-release` follow the IDE's JBR, not the build JDK (configured in `gradle.properties` and `build.gradle.kts`).
 - Gradle configuration cache and build cache are already enabled in `gradle.properties`; keep them working.
 - Version catalog in `gradle/libs.versions.toml`; no versions inline in `build.gradle.kts`.
 

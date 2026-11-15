@@ -2,13 +2,13 @@
 <idea-plugin>
     <id>dev.mina.ViewMD</id>
     <name>ViewMD</name>
-    <vendor email="MinaFayezN@gmail.com" url="https://github.com/mina/ViewMD">dev.mina</vendor>
+    <vendor email="MinaFayezN@gmail.com" url="https://github.com/MinaFayezN/ViewMD">dev.mina</vendor>
 
     <description><![CDATA[
         <p><b>ViewMD</b> delivers a cleaner, smarter Markdown preview for <b>IntelliJ IDEA</b>, <b>Android Studio</b>, and IntelliJ-based IDEs.</p>
         <p>Tired of squeezed tables wrapping text one letter per line, broken diagrams, or missing offline renderers? ViewMD fixes markdown rendering friction with responsive layouts and offline-first tools.</p>
 
-        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/demo.gif" width="600" alt="ViewMD Interactive Demo"></p>
+        <p><img src="https://raw.githubusercontent.com/MinaFayezN/ViewMD/main/docs/images/demo.gif" width="600" alt="ViewMD Interactive Demo"></p>
 
         <h3>Supported IDEs</h3>
         <ul>
@@ -27,9 +27,9 @@
             <li><b>Export & Sharing</b>: One-click "Open in Browser" and "Export as HTML" with bundled inlined styles.</li>
         </ul>
 
-        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/responsive-table-toolbar.png" width="600" alt="Responsive Table Toolbar"></p>
-        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/dark-theme-preview.png" width="600" alt="Dark Theme Preview"></p>
-        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/yaml-frontmatter-card.png" width="600" alt="YAML Front Matter Card"></p>
+        <p><img src="https://raw.githubusercontent.com/MinaFayezN/ViewMD/main/docs/images/responsive-table-toolbar.png" width="600" alt="Responsive Table Toolbar"></p>
+        <p><img src="https://raw.githubusercontent.com/MinaFayezN/ViewMD/main/docs/images/dark-theme-preview.png" width="600" alt="Dark Theme Preview"></p>
+        <p><img src="https://raw.githubusercontent.com/MinaFayezN/ViewMD/main/docs/images/yaml-frontmatter-card.png" width="600" alt="YAML Front Matter Card"></p>
     ]]></description>
 
     <change-notes><![CDATA[

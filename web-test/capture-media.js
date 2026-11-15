@@ -41,8 +41,8 @@ async function run() {
   });
 
   // Prepare fixtures with production assets
-  const lightSource = fs.readFileSync(path.resolve(__dirname, 'fixtures/torture-test-light.html'), 'utf-8');
-  const darkSource = fs.readFileSync(path.resolve(__dirname, 'fixtures/torture-test-dark.html'), 'utf-8');
+  const lightSource = fs.readFileSync(path.resolve(__dirname, 'fixtures/showcase-light.html'), 'utf-8');
+  const darkSource = fs.readFileSync(path.resolve(__dirname, 'fixtures/showcase-dark.html'), 'utf-8');
 
   const tmpLight = path.resolve(__dirname, 'fixtures/tmp-capture-light.html');
   const tmpDark = path.resolve(__dirname, 'fixtures/tmp-capture-dark.html');
@@ -92,12 +92,13 @@ async function run() {
   console.log('Saved:', shot3);
 
   // Screenshot 4: Offline Diagrams (Mermaid & PlantUML)
-  const diagramsHeader = page.locator('h2', { hasText: 'Mermaid' }).first();
+  const diagramsHeader = page.locator('h2, h3', { hasText: /Diagram|Mermaid/i }).first();
   if (await diagramsHeader.count() > 0) {
     await diagramsHeader.scrollIntoViewIfNeeded();
     await page.waitForTimeout(1000);
     const shot4 = path.join(SCREENSHOTS_DIR, '04-offline-diagrams.png');
     await page.screenshot({ path: shot4 });
+    fs.copyFileSync(shot4, path.join(DOCS_IMAGES_DIR, 'offline-diagrams.png'));
     console.log('Saved:', shot4);
   }
 

@@ -4,9 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ViewMD Torture Test - light</title>
-  <style>/* ViewMD baseline styles & table layout */
-:root {
-  color-scheme: light dark;
+  <style>/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* ViewMD baseline styles & table layout */
+:root, [data-theme="light"] {
+  color-scheme: light;
   --viewmd-fg: #1f2328;
   --viewmd-bg: #ffffff;
   --viewmd-muted: #59636e;
@@ -14,24 +32,41 @@
   --viewmd-soft: #f6f8fa;
   --viewmd-code: #eff1f3;
   --viewmd-link: #0969da;
+  --viewmd-table-border: #d1d9e0;
+  --viewmd-table-stripe: #f6f8fa;
   --viewmd-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --viewmd-font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --viewmd-col-min: 12ch;
   --viewmd-col-first-min: 14ch;
 }
 
+[data-theme="dark"], :root[data-theme="dark"], body.theme-dark, body.dark-theme, body.darcula, html.theme-dark, html.dark, html[data-theme="dark"] {
+  color-scheme: dark;
+  --viewmd-fg: #e6edf3;
+  --viewmd-bg: #0d1117;
+  --viewmd-muted: #9198a1;
+  --viewmd-line: #3d444d;
+  --viewmd-soft: #161b22;
+  --viewmd-code: #21262d;
+  --viewmd-link: #4493f8;
+  --viewmd-table-border: #30363d;
+  --viewmd-table-stripe: #161b22;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --viewmd-fg: #e6edf3;
     --viewmd-bg: #0d1117;
     --viewmd-muted: #9198a1;
     --viewmd-line: #3d444d;
-    --viewmd-soft: #151b23;
-    --viewmd-code: #262c36;
+    --viewmd-soft: #161b22;
+    --viewmd-code: #21262d;
     --viewmd-link: #4493f8;
+    --viewmd-table-border: #30363d;
+    --viewmd-table-stripe: #161b22;
   }
 }
-
 html {
   box-sizing: border-box;
 }
@@ -113,6 +148,8 @@ blockquote {
   table-layout: auto;
   border-spacing: 0;
   margin: 0;
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
 }
 
 .viewmd-table-wrap th,
@@ -123,6 +160,7 @@ blockquote {
   vertical-align: top;
   overflow-wrap: break-word;
   border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-fg);
 }
 
 .viewmd-table-wrap th:first-child,
@@ -138,7 +176,8 @@ blockquote {
 
 .viewmd-table-wrap th {
   font-weight: 600;
-  background: var(--viewmd-soft);
+  background-color: var(--viewmd-soft);
+  color: var(--viewmd-fg);
   text-align: left;
   position: sticky;
   top: 0;
@@ -146,7 +185,13 @@ blockquote {
 }
 
 .viewmd-table-wrap tbody tr:nth-child(even) {
-  background-color: var(--viewmd-soft);
+  background-color: var(--viewmd-table-stripe);
+  color: var(--viewmd-fg);
+}
+
+.viewmd-table-wrap tbody tr:nth-child(odd) {
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
 }
 
 /* Front matter card (R-FM-1..4) */
@@ -176,6 +221,136 @@ blockquote {
   border-radius: 12px;
   background: rgba(127, 127, 127, 0.15);
   font-size: 12px;
+}
+
+/* Diagram containers & Error boxes (R-DIA-1..4) */
+.viewmd-diagram-container {
+  display: block;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.viewmd-diagram-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.viewmd-diagram-error {
+  border: 1px solid #cf222e;
+  border-radius: 6px;
+  background-color: rgba(207, 34, 46, 0.08);
+  padding: 12px 16px;
+  margin: 16px 0;
+  color: #cf222e;
+}
+
+.viewmd-diagram-error-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.viewmd-diagram-error-source {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(207, 34, 46, 0.2);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 0;
+  color: inherit;
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+/* Toolbar and copy buttons (R-TBL-6, R-DIA-7) */
+.viewmd-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--viewmd-soft);
+  border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-muted);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+pre:hover .viewmd-copy-btn {
+  opacity: 1;
+}
+
+.viewmd-table-toolbar {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+.viewmd-table-wrap:hover .viewmd-table-toolbar {
+  opacity: 1;
+}
+
+.viewmd-table-toolbar button {
+  background: var(--viewmd-soft);
+  border: 1px solid var(--viewmd-line);
+  color: var(--viewmd-muted);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.viewmd-table-toolbar button:hover,
+.viewmd-copy-btn:hover {
+  color: var(--viewmd-fg);
+  border-color: var(--viewmd-link);
+}
+
+/* Theme toggle button styling for browser exports */
+.viewmd-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--viewmd-soft);
+  color: var(--viewmd-fg);
+  border: 1px solid var(--viewmd-line);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: var(--viewmd-font-sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.viewmd-theme-toggle:hover {
+  background: var(--viewmd-code);
+  border-color: var(--viewmd-link);
+}
+
+body {
+  background-color: var(--viewmd-bg);
+  color: var(--viewmd-fg);
+}
+
+a {
+  color: var(--viewmd-link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 </style>
   <style>html, body { background: #ffffff; color: #1f2328; }</style>
@@ -214,10 +389,10 @@ letter-per-line wrapping.</p>
 <td>R-001</td>
 <td>Tables</td>
 <td>Wide tables scroll horizontally instead of squeezing columns into one-letter lines</td>
-<td>Mina</td>
+<td>Platform Team</td>
 <td>In progress</td>
 <td>P0</td>
-<td>TM-19602</td>
+<td>VMD-101</td>
 <td>Medium: depends on CSS specificity in the stock preview</td>
 <td><code>docs/images/baseline/wide-900.png</code></td>
 <td>Verified in Android Studio 2026.2.2 sandbox with a 12 column fixture and a long paragraph in every cell to force wrapping</td>
@@ -228,10 +403,10 @@ letter-per-line wrapping.</p>
 <td>R-002</td>
 <td>Front matter</td>
 <td>Render <code>summary</code> as text and <code>triggers</code> as chips in a collapsed card</td>
-<td>Mina</td>
+<td>Platform Team</td>
 <td>Not started</td>
 <td>P0</td>
-<td>TM-19603</td>
+<td>VMD-102</td>
 <td>Low</td>
 <td>n/a</td>
 <td>Invalid YAML must show a warning and still render the body</td>
@@ -242,10 +417,10 @@ letter-per-line wrapping.</p>
 <td>R-003</td>
 <td>Diagrams</td>
 <td>Mermaid and PlantUML render offline</td>
-<td>Mina</td>
+<td>Platform Team</td>
 <td>Not started</td>
 <td>P0</td>
-<td>TM-19604</td>
+<td>VMD-103</td>
 <td>High: PlantUML may need Graphviz</td>
 <td>n/a</td>
 <td>Compare in-process jar vs the IDE plugin</td>
@@ -313,7 +488,7 @@ letter-per-line wrapping.</p>
 <tbody>
 <tr>
 <td>URL</td>
-<td><a href="https://thrivemarket.atlassian.net/wiki/spaces/TECH/pages/4888788998/Prism+Architecture+Design+Reference?focusedCommentId=123456789">https://thrivemarket.atlassian.net/wiki/spaces/TECH/pages/4888788998/Prism+Architecture+Design+Reference?focusedCommentId=123456789</a></td>
+<td><a href="https://example.com/api/v1/reference/table-rendering-spec?param=long-token-parameter-value-wrap-test">https://example.com/api/v1/reference/table-rendering-spec?param=long-token-parameter-value-wrap-test</a></td>
 </tr>
 <tr>
 <td>SHA-256</td>
@@ -321,7 +496,7 @@ letter-per-line wrapping.</p>
 </tr>
 <tr>
 <td>Path</td>
-<td>thrive-market-app/app/src/main/java/com/thrivemarket/app/feature/checkout/presentation/viewmodel/CheckoutViewModel.kt</td>
+<td>dev/mina/viewmd/feature/table/presentation/viewmodel/TableViewModel.kt</td>
 </tr>
 </tbody>
 </table>
@@ -391,16 +566,17 @@ letter-per-line wrapping.</p>
   P--&gt;&gt;U: tables reflow, scroll stays
 </code></pre>
 <h2>7. PlantUML</h2>
-<div class="viewmd-diagram-container viewmd-plantuml-container">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="295px" preserveAspectRatio="none" style="width:255px;height:295px;background:#FFFFFF;" version="1.1" viewBox="0 0 255 295" width="255px" zoomAndPan="magnify"><defs/><g><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="23" x2="23" y1="84.0679" y2="212.186"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5.0,5.0;" x1="156.7642" x2="156.7642" y1="84.0679" y2="212.186"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.6179" x="5" y="79.9659">User</text><ellipse cx="23.3089" cy="13.5" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M23.3089,21.5 L23.3089,48.5 M10.3089,29.5 L36.3089,29.5 M23.3089,48.5 L10.3089,63.5 M23.3089,48.5 L36.3089,63.5 " fill="none" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30.6179" x="5" y="226.1519">User</text><ellipse cx="23.3089" cy="238.7539" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M23.3089,246.7539 L23.3089,273.7539 M10.3089,254.7539 L36.3089,254.7539 M23.3089,273.7539 L10.3089,288.7539 M23.3089,273.7539 L36.3089,288.7539 " fill="none" style="stroke:#181818;stroke-width:0.5;"/><rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="67.8298" x="123.7642" y="50"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53.8298" x="130.7642" y="71.9659">ViewMD</text><rect fill="#E2E2F0" height="33.0679" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="67.8298" x="123.7642" y="211.186"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="53.8298" x="130.7642" y="233.1519">ViewMD</text><polygon fill="#181818" points="145.6791,113.7739,155.6791,117.7739,145.6791,121.7739,149.6791,117.7739" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="23.3089" x2="151.6791" y1="117.7739" y2="117.7739"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="110.3701" x="30.3089" y="111.9649">open README.md</text><line style="stroke:#181818;stroke-width:1.0;" x1="157.6791" x2="199.6791" y1="149.4799" y2="149.4799"/><line style="stroke:#181818;stroke-width:1.0;" x1="199.6791" x2="199.6791" y1="149.4799" y2="162.4799"/><line style="stroke:#181818;stroke-width:1.0;" x1="158.6791" x2="199.6791" y1="162.4799" y2="162.4799"/><polygon fill="#181818" points="168.6791,158.4799,158.6791,162.4799,168.6791,166.4799,164.6791,162.4799" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="83.6941" x="164.6791" y="143.6709">render offline</text><polygon fill="#181818" points="34.3089,190.186,24.3089,194.186,34.3089,198.186,30.3089,194.186" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;stroke-dasharray:2.0,2.0;" x1="28.3089" x2="156.6791" y1="194.186" y2="194.186"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="48.204" x="40.3089" y="188.377">preview</text><!--SRC=[IqmkoIzI22rEBU824GgwTWfXcQdblYuALWhv1Qbv2a6kZYw-hdgvALnGSMGLHQbvAK1D-MbfEPbvgN0LG2LWmwmK2efIou220000]--></g></svg>
-</div>
+<pre><code class="language-plantuml">@startuml
+actor User
+User -&gt; ViewMD : open README.md
+ViewMD -&gt; ViewMD : render offline
+ViewMD --&gt; User : preview
+@enduml
+</code></pre>
 <p>An intentionally broken one (must show an error box plus the source, no crash):</p>
-<div class="viewmd-diagram-error">
-  <div class="viewmd-diagram-error-title">PlantUML rendering failed: Syntax Error? (line 2)</div>
-  <pre class="viewmd-diagram-error-source"><code>@startuml
+<pre><code class="language-plantuml">@startuml
 this is not valid -&gt;-&gt; plantuml
 </code></pre>
-</div>
 <h2>8. Alerts, task lists, footnotes, details</h2>
 <blockquote>
 <p>[!NOTE]
@@ -444,7 +620,7 @@ Urgent info that needs attention.</p>
 <pre><code class="language-diff">- old line
 + new line
 </code></pre>
-<pre><code class="language-bash">./gradlew :app:testDebugUnitTest --tests &quot;com.thrivemarket.app.feature.ClassNameTest&quot;
+<pre><code class="language-bash">./gradlew test --tests &quot;dev.mina.viewmd.feature.TableFeatureTest&quot;
 </code></pre>
 <p>A very long single line in a fence must scroll inside the block, not the page:</p>
 <pre><code class="language-text">this_is_a_very_long_line_without_any_spaces_to_check_that_code_blocks_scroll_horizontally_and_do_not_widen_the_page_0123456789_0123456789_0123456789_0123456789_0123456789_0123456789
@@ -499,26 +675,47 @@ $$</p>
 <hr />
 <p>Final paragraph with a very long unbreakable string: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
 
-  <script>(function () {
+  <script>/*
+ * ViewMD — Enhanced Markdown preview for Android Studio and IntelliJ-based IDEs
+ * Copyright (C) 2026 Mina
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+(function () {
   'use strict';
 
   function wrapTables() {
     const tables = document.querySelectorAll('table:not(.viewmd-wrapped)');
-    tables.forEach((table) => {
-      if (table.parentElement && table.parentElement.classList.contains('viewmd-table-wrap')) {
+    if (tables.length === 0) return;
+
+    for (let i = 0; i < tables.length; i++) {
+      const table = tables[i];
+      const parent = table.parentElement;
+      if (parent && parent.classList.contains('viewmd-table-wrap')) {
         table.classList.add('viewmd-wrapped');
-        return;
+        continue;
       }
       const wrap = document.createElement('div');
       wrap.className = 'viewmd-table-wrap';
-      table.parentNode.insertBefore(wrap, table);
+      parent.insertBefore(wrap, table);
       wrap.appendChild(table);
       table.classList.add('viewmd-wrapped');
-    });
+    }
   }
 
   function enhanceFrontMatter() {
-    // If stock markdown rendered frontmatter as details.fm or pre block
     const detailsFm = document.querySelector('details.fm:not(.viewmd-fm-processed)');
     if (detailsFm) {
       detailsFm.classList.add('viewmd-fm-processed');
@@ -527,7 +724,8 @@ $$</p>
     }
 
     const preBlocks = document.querySelectorAll('pre > code');
-    for (const code of preBlocks) {
+    for (let i = 0; i < Math.min(preBlocks.length, 3); i++) {
+      const code = preBlocks[i];
       const text = (code.textContent || '').trim();
       if (text.startsWith('summary:') || (text.startsWith('---') && text.includes('summary:'))) {
         const pre = code.parentElement;
@@ -547,19 +745,30 @@ $$</p>
     let indexed = true;
     const others = [];
 
+    let inTriggers = false;
     lines.forEach((line) => {
+      const trimmed = line.trim();
       const matchSummary = line.match(/^summary:\s*["']?(.*?)["']?$/);
-      const matchTriggers = line.match(/^triggers:\s*\[(.*?)\]/);
+      const matchTriggers = line.match(/^triggers:\s*(?:\[(.*?)\]|"?([^"\]]+)"?)?$/);
       const matchIndex = line.match(/^index:\s*(false|true)/i);
 
       if (matchSummary) {
         summary = matchSummary[1];
-      } else if (matchTriggers) {
-        triggers = matchTriggers[1].split(',').map((t) => t.trim().replace(/^["']|["']$/g, ''));
+        inTriggers = false;
+      } else if (matchTriggers && (matchTriggers[1] || matchTriggers[2])) {
+        const val = matchTriggers[1] || matchTriggers[2];
+        triggers = val.split(',').map((t) => t.trim().replace(/^["']|["']$/g, ''));
+        inTriggers = false;
+      } else if (trimmed === 'triggers:') {
+        inTriggers = true;
+      } else if (inTriggers && trimmed.startsWith('-')) {
+        triggers.push(trimmed.replace(/^-\s*/, '').replace(/^["']|["']$/g, '').trim());
       } else if (matchIndex) {
         indexed = matchIndex[1].toLowerCase() === 'true';
-      } else if (line.trim().length > 0) {
-        others.push(line.trim());
+        inTriggers = false;
+      } else if (trimmed.length > 0) {
+        others.push(trimmed);
+        inTriggers = false;
       }
     });
 
@@ -607,6 +816,106 @@ $$</p>
     container.parentNode.replaceChild(card, container);
   }
 
+  function resolveMermaidApi() {
+    if (typeof window.mermaid !== 'undefined' && typeof window.mermaid.render === 'function') {
+      return window.mermaid;
+    }
+    if (typeof window.extension === 'object' && window.extension) {
+      if (typeof window.extension.mermaid === 'object' && typeof window.extension.mermaid.render === 'function') {
+        window.mermaid = window.extension.mermaid;
+        return window.mermaid;
+      }
+    }
+    return null;
+  }
+
+  function renderMermaidDiagrams() {
+    const mermaidApi = resolveMermaidApi();
+    if (!mermaidApi) return;
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    try {
+      mermaidApi.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'dark' : 'default',
+        securityLevel: 'loose'
+      });
+    } catch (e) {
+      // Ignore if already initialized
+    }
+
+    // 1. Standalone pre.mermaid blocks
+    const preBlocks = document.querySelectorAll('pre.mermaid:not(.viewmd-mermaid-rendered)');
+    preBlocks.forEach((block, index) => {
+      const source = (block.textContent || '').trim();
+      renderMermaidElement(block, source, `mermaid-pre-${Date.now()}-${index}`);
+    });
+
+    // 2. JetBrains Markdown mermaid fence blocks (<div class="mermaid" data-actual-fence-content="...">)
+    const jbDivBlocks = document.querySelectorAll('div.mermaid[data-actual-fence-content]:not(.viewmd-mermaid-rendered)');
+    jbDivBlocks.forEach((block, index) => {
+      let source = '';
+      const b64 = block.getAttribute('data-actual-fence-content');
+      if (b64) {
+        try {
+          source = decodeURIComponent(escape(window.atob(b64))).trim();
+        } catch (e) {
+          try {
+            source = window.atob(b64).trim();
+          } catch (e2) {
+            source = (block.textContent || '').trim();
+          }
+        }
+      } else {
+        source = (block.textContent || '').trim();
+      }
+
+      // Also clean up any wrapping pre/code parent generated by JetBrains Markdown
+      const parentCode = block.closest('code.language-mermaid');
+      const targetElement = parentCode && parentCode.parentElement && parentCode.parentElement.tagName === 'PRE'
+        ? parentCode.parentElement
+        : (parentCode || block);
+
+      renderMermaidElement(targetElement, source, `mermaid-jb-${Date.now()}-${index}`, block);
+    });
+
+    // 3. Generic code.language-mermaid blocks
+    const codeBlocks = document.querySelectorAll('code.language-mermaid:not(.viewmd-mermaid-rendered)');
+    codeBlocks.forEach((block, index) => {
+      if (block.querySelector('div.mermaid[data-actual-fence-content]')) return;
+      const source = (block.textContent || '').trim();
+      const targetElement = block.parentElement && block.parentElement.tagName === 'PRE'
+        ? block.parentElement
+        : block;
+      renderMermaidElement(targetElement, source, `mermaid-code-${Date.now()}-${index}`, block);
+    });
+  }
+
+  function renderMermaidElement(targetElement, source, id, originalBlock) {
+    if (!source) return;
+    targetElement.classList.add('viewmd-mermaid-rendered');
+    if (originalBlock) originalBlock.classList.add('viewmd-mermaid-rendered');
+
+    const mermaidApi = resolveMermaidApi();
+    if (!mermaidApi) return;
+
+    mermaidApi.render(id, source).then(({ svg }) => {
+      const container = document.createElement('div');
+      container.className = 'viewmd-diagram-container';
+      container.innerHTML = svg;
+      targetElement.parentNode.replaceChild(container, targetElement);
+    }).catch((err) => {
+      console.warn('Mermaid rendering failed for:', source, err);
+      const errDiv = document.createElement('div');
+      errDiv.className = 'viewmd-diagram-error';
+      errDiv.innerHTML = `
+        <div class="viewmd-diagram-error-title">Mermaid rendering error</div>
+        <pre class="viewmd-diagram-error-source"><code>${escapeHtml(source)}</code></pre>
+      `;
+      targetElement.parentNode.replaceChild(errDiv, targetElement);
+    });
+  }
+
   function escapeHtml(str) {
     return str.replace(/[&<>'"]/g, (tag) => ({
       '&': '&amp;',
@@ -617,9 +926,362 @@ $$</p>
     }[tag] || tag));
   }
 
+  function applyTheme(isDark) {
+    const root = document.documentElement;
+    if (isDark) {
+      root.setAttribute('data-theme', 'dark');
+      root.style.setProperty('color-scheme', 'dark');
+      root.style.setProperty('--viewmd-fg', '#e6edf3');
+      root.style.setProperty('--viewmd-bg', '#0d1117');
+      root.style.setProperty('--viewmd-soft', '#161b22');
+      root.style.setProperty('--viewmd-line', '#3d444d');
+      root.style.setProperty('--viewmd-code', '#21262d');
+      root.style.setProperty('--viewmd-link', '#4493f8');
+      root.style.setProperty('--viewmd-table-border', '#30363d');
+      root.style.setProperty('--viewmd-table-stripe', '#161b22');
+    } else {
+      root.setAttribute('data-theme', 'light');
+      root.style.setProperty('color-scheme', 'light');
+      root.style.setProperty('--viewmd-fg', '#1f2328');
+      root.style.setProperty('--viewmd-bg', '#ffffff');
+      root.style.setProperty('--viewmd-soft', '#f6f8fa');
+      root.style.setProperty('--viewmd-line', '#d1d9e0');
+      root.style.setProperty('--viewmd-code', '#eff1f3');
+      root.style.setProperty('--viewmd-link', '#0969da');
+      root.style.setProperty('--viewmd-table-border', '#d1d9e0');
+      root.style.setProperty('--viewmd-table-stripe', '#f6f8fa');
+    }
+
+    const toggleBtn = document.getElementById('viewmd-theme-toggle');
+    const toggleIcon = document.getElementById('viewmd-theme-icon');
+    const toggleText = document.getElementById('viewmd-theme-text');
+    if (toggleIcon) toggleIcon.textContent = isDark ? '☀️' : '🌙';
+    if (toggleText) toggleText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+
+    if (typeof window.mermaid !== 'undefined') {
+      try {
+        window.mermaid.initialize({
+          theme: isDark ? 'dark' : 'default',
+          securityLevel: 'loose'
+        });
+      } catch (e) {
+      }
+      // Trigger diagram color refresh on existing SVGs
+      document.querySelectorAll('.viewmd-diagram-container').forEach((c) => {
+        // SVG styling updates smoothly via CSS variables
+      });
+    }
+  }
+
+  function detectDarkBackground() {
+    try {
+      let el = document.body;
+      let bg = el ? window.getComputedStyle(el).backgroundColor : null;
+      if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
+        el = document.documentElement;
+        bg = el ? window.getComputedStyle(el).backgroundColor : null;
+      }
+      if (!bg || bg === 'transparent' || bg === 'rgba(0, 0, 0, 0)') {
+        return false;
+      }
+      const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (match) {
+        const r = parseInt(match[1], 10);
+        const g = parseInt(match[2], 10);
+        const b = parseInt(match[3], 10);
+        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+        return luminance < 128;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function initThemeToggle() {
+    const toggleBtn = document.getElementById('viewmd-theme-toggle');
+    if (toggleBtn && !toggleBtn.classList.contains('viewmd-toggle-initialized')) {
+      toggleBtn.classList.add('viewmd-toggle-initialized');
+
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newIsDark = currentTheme !== 'dark';
+        applyTheme(newIsDark);
+        try {
+          localStorage.setItem('viewmd-theme', newIsDark ? 'dark' : 'light');
+        } catch (err) {}
+      });
+    }
+
+    // Check theme preference or auto-detection
+    let themeApplied = false;
+    try {
+      const savedTheme = localStorage.getItem('viewmd-theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        applyTheme(savedTheme === 'dark');
+        themeApplied = true;
+      }
+    } catch (err) {}
+
+    if (!themeApplied) {
+      const explicitTheme = document.documentElement.getAttribute('data-theme');
+      if (explicitTheme === 'dark' || explicitTheme === 'light') {
+        applyTheme(explicitTheme === 'dark');
+        themeApplied = true;
+      }
+    }
+
+    if (!themeApplied) {
+      if (detectDarkBackground()) {
+        applyTheme(true);
+        themeApplied = true;
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme(true);
+        themeApplied = true;
+      }
+    }
+  }
+
+  let customStyleEl = null;
+
+  function applyCustomCss(cssText) {
+    if (!customStyleEl) {
+      customStyleEl = document.createElement('style');
+      customStyleEl.id = 'viewmd-custom-user-style';
+      document.head.appendChild(customStyleEl);
+    }
+    customStyleEl.textContent = cssText || '';
+  }
+
+  function applySettings(settings) {
+    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return;
+    const root = document.documentElement;
+
+    if (typeof settings.maxWidth === 'string' && /^(\d{2,5}(px|%)|none)$/.test(settings.maxWidth.trim())) {
+      root.style.setProperty('--viewmd-max-width', settings.maxWidth.trim());
+    }
+    if (typeof settings.fontSizePx === 'number' || (typeof settings.fontSizePx === 'string' && /^\d+$/.test(settings.fontSizePx))) {
+      const size = Math.max(10, Math.min(60, parseInt(settings.fontSizePx, 10)));
+      root.style.setProperty('--viewmd-font-size', size + 'px');
+      document.body.style.fontSize = size + 'px';
+    }
+    if (typeof settings.fontFamily === 'string' && /^[a-zA-Z0-9\s,._"'-]+$/.test(settings.fontFamily.trim())) {
+      const family = settings.fontFamily.trim();
+      root.style.setProperty('--viewmd-font-sans', family);
+      document.body.style.fontFamily = family;
+    }
+    if (typeof settings.colMinChars === 'number' || (typeof settings.colMinChars === 'string' && /^\d+$/.test(settings.colMinChars))) {
+      const cols = Math.max(4, Math.min(100, parseInt(settings.colMinChars, 10)));
+      root.style.setProperty('--viewmd-col-min', cols + 'ch');
+    }
+    if (typeof settings.colFirstMinChars === 'number' || (typeof settings.colFirstMinChars === 'string' && /^\d+$/.test(settings.colFirstMinChars))) {
+      const firstCols = Math.max(4, Math.min(100, parseInt(settings.colFirstMinChars, 10)));
+      root.style.setProperty('--viewmd-col-first-min', firstCols + 'ch');
+    }
+
+    if (typeof settings.hideFrontMatterCard === 'boolean') {
+      const cards = document.querySelectorAll('.viewmd-frontmatter-card');
+      cards.forEach((card) => {
+        card.style.display = settings.hideFrontMatterCard ? 'none' : '';
+      });
+    }
+
+    if (typeof settings.expandFrontMatterCard === 'boolean') {
+      const cards = document.querySelectorAll('.viewmd-frontmatter-card');
+      cards.forEach((card) => {
+        if (!settings.hideFrontMatterCard) {
+          card.open = settings.expandFrontMatterCard;
+        }
+      });
+    }
+
+    if (typeof settings.customCss === 'string') {
+      applyCustomCss(settings.customCss);
+    }
+  }
+
+  const ALLOWED_MESSAGE_TYPES = ['THEME_CHANGED', 'SETTINGS_CHANGED', 'CUSTOM_CSS_CHANGED'];
+
+  function handleViewMdPayload(payload) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return;
+    if (!Object.prototype.hasOwnProperty.call(payload, 'type')) return;
+    if (typeof payload.type !== 'string' || !ALLOWED_MESSAGE_TYPES.includes(payload.type)) return;
+
+    if (payload.type === 'THEME_CHANGED') {
+      if (typeof payload.isDark === 'boolean') {
+        applyTheme(payload.isDark);
+      }
+    } else if (payload.type === 'SETTINGS_CHANGED') {
+      applySettings(payload);
+    } else if (payload.type === 'CUSTOM_CSS_CHANGED') {
+      if (typeof payload.css === 'string') {
+        applyCustomCss(payload.css);
+      }
+    }
+  }
+
+  window.addEventListener('message', (event) => {
+    if (!event.data) return;
+    try {
+      const payload = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      handleViewMdPayload(payload);
+    } catch (e) {
+    }
+  });
+
+  // Subscribe to JetBrains JCEF MessagePipe if present
+  if (window.__IntelliJTools && window.__IntelliJTools.messagePipe) {
+    try {
+      window.__IntelliJTools.messagePipe.subscribe('viewmd:event', (data) => {
+        try {
+          const payload = typeof data === 'string' ? JSON.parse(data) : data;
+          handleViewMdPayload(payload);
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
+
+  function addCopyButtonsToCodeBlocks() {
+    const pres = document.querySelectorAll('pre:not(.viewmd-copy-ready)');
+    pres.forEach((pre) => {
+      pre.classList.add('viewmd-copy-ready');
+      const btn = document.createElement('button');
+      btn.className = 'viewmd-copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const code = pre.querySelector('code');
+        const text = code ? code.textContent : pre.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        } catch (err) {
+          btn.textContent = 'Failed';
+        }
+      });
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }
+
+  function addTableToolbar() {
+    const wraps = document.querySelectorAll('.viewmd-table-wrap:not(.viewmd-toolbar-ready)');
+    wraps.forEach((wrap) => {
+      wrap.classList.add('viewmd-toolbar-ready');
+      wrap.style.position = 'relative';
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'viewmd-table-toolbar';
+
+      const copyMdBtn = document.createElement('button');
+      copyMdBtn.textContent = 'Copy Markdown';
+      copyMdBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const table = wrap.querySelector('table');
+        if (!table) return;
+        const mdText = tableToMarkdown(table);
+        try {
+          await navigator.clipboard.writeText(mdText);
+          copyMdBtn.textContent = 'Copied!';
+          setTimeout(() => { copyMdBtn.textContent = 'Copy Markdown'; }, 1500);
+        } catch (err) {
+          copyMdBtn.textContent = 'Failed';
+        }
+      });
+
+      const copyTsvBtn = document.createElement('button');
+      copyTsvBtn.textContent = 'Copy TSV';
+      copyTsvBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const table = wrap.querySelector('table');
+        if (!table) return;
+        const tsvText = tableToTsv(table);
+        try {
+          await navigator.clipboard.writeText(tsvText);
+          copyTsvBtn.textContent = 'Copied!';
+          setTimeout(() => { copyTsvBtn.textContent = 'Copy TSV'; }, 1500);
+        } catch (err) {
+          copyTsvBtn.textContent = 'Failed';
+        }
+      });
+
+      toolbar.appendChild(copyMdBtn);
+      toolbar.appendChild(copyTsvBtn);
+      wrap.appendChild(toolbar);
+    });
+  }
+
+  function tableToMarkdown(table) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    return rows.map((r) => {
+      const cells = Array.from(r.querySelectorAll('th, td')).map((c) => (c.textContent || '').trim().replace(/\|/g, '\\|'));
+      return `| ${cells.join(' | ')} |`;
+    }).join('\n');
+  }
+
+  function tableToTsv(table) {
+    const rows = Array.from(table.querySelectorAll('tr'));
+    return rows.map((r) => {
+      const cells = Array.from(r.querySelectorAll('th, td')).map((c) => (c.textContent || '').trim().replace(/\t/g, ' '));
+      return cells.join('\t');
+    }).join('\n');
+  }
+
+  function cleanExternalBrowserArtifacts() {
+    const isExternalBrowser = typeof window.__IntelliJTools === 'undefined';
+    if (isExternalBrowser) {
+      // 1. Remove IDE command runner links that scroll to # with broken images
+      document.querySelectorAll('a[data-command], a.run-icon, a.run-icon-line').forEach((el) => el.remove());
+      // 2. Remove duplicate/broken IDE copy buttons
+      document.querySelectorAll('.code-fence-highlighter-copy-button').forEach((el) => el.remove());
+    }
+
+    // 3. Neutralize broken alert icons pointing to relative alertIcons/*.png (order-independent)
+    document.querySelectorAll('img.markdown-alert-icon, img[src*="alertIcons/"]').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (src.includes('alertIcons/')) {
+        const match = src.match(/alertIcons\/([a-zA-Z]+)\.png/i);
+        const type = match ? match[1].toLowerCase() : 'note';
+        const emojiMap = { note: 'ℹ️', tip: '💡', important: '❗', warning: '⚠️', caution: '🛑' };
+        const span = document.createElement('span');
+        span.className = 'viewmd-alert-icon';
+        span.style.marginRight = '8px';
+        span.textContent = emojiMap[type] || 'ℹ️';
+        img.parentNode.replaceChild(span, img);
+      }
+    });
+
+    // 4. Remove any commandRunner images or broken images inside anchors
+    document.querySelectorAll('img[src*="commandRunner/"]').forEach((img) => {
+      const parentLink = img.closest('a');
+      if (parentLink && (parentLink.getAttribute('href') === '#' || parentLink.hasAttribute('data-command'))) {
+        parentLink.remove();
+      } else {
+        img.remove();
+      }
+    });
+
+    // 5. Strip all headless <img> elements (missing src, empty src, or copy button icons)
+    document.querySelectorAll('img:not([src]), img[src=""], img.code-fence-highlighter-copy-button-icon').forEach((el) => {
+      el.remove();
+    });
+
+    // 6. Prune any orphaned <a href="#"> links that contain no text and no remaining element children
+    document.querySelectorAll('a[href="#"]').forEach((el) => {
+      if (!el.textContent.trim() && el.children.length === 0) {
+        el.remove();
+      }
+    });
+  }
+
   function run() {
+    cleanExternalBrowserArtifacts();
+    initThemeToggle();
     wrapTables();
     enhanceFrontMatter();
+    renderMermaidDiagrams();
+    addTableToolbar();
+    addCopyButtonsToCodeBlocks();
   }
 
   if (document.readyState === 'loading') {
@@ -628,9 +1290,18 @@ $$</p>
     run();
   }
 
+  let debounceTimer = null;
   const observer = new MutationObserver(() => {
-    wrapTables();
-    enhanceFrontMatter();
+    if (debounceTimer) return;
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      cleanExternalBrowserArtifacts();
+      initThemeToggle();
+      wrapTables();
+      renderMermaidDiagrams();
+      addTableToolbar();
+      addCopyButtonsToCodeBlocks();
+    }, 50);
   });
 
   observer.observe(document.body || document.documentElement, {
