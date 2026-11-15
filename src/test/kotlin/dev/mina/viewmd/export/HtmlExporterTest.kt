@@ -129,4 +129,36 @@ class HtmlExporterTest {
         assertTrue(contentBody.contains("viewmd-alert-icon"))
         assertTrue(contentBody.contains("ℹ️"))
     }
+
+    @Test
+    fun testGenerateStandaloneHtmlHardensHeadlessImagesAndInvertedAlertAttributes() {
+        val mixedContent = """
+            <pre class="code-fence"><a href="#" role="button"><img class="code-fence-highlighter-copy-button-icon"></a><code>val x = 1</code></pre>
+            <blockquote class="markdown-alert"><p><img src="alertIcons/tip.png" class="markdown-alert-icon" alt="Tip">Tip title</p></blockquote>
+            <p><img src="" alt="empty src"><img class="headless-img" alt="no src"></p>
+            <p><a href="#">   </a></p>
+        """.trimIndent()
+
+        val html = HtmlExporter.generateStandaloneHtml(
+            title = "Hardening Test",
+            bodyHtml = mixedContent,
+            project = null,
+            isDark = false
+        )
+
+        val contentBody = html.substringAfter("<div class=\"viewmd-content\">").substringBefore("</div>")
+
+        // Inverted alert icon attributes are cleanly converted
+        assertFalse("Must not contain relative alertIcons", contentBody.contains("alertIcons/tip.png"))
+        assertTrue("Must contain sanitized badge", contentBody.contains("viewmd-alert-icon"))
+        assertTrue("Must contain tip emoji", contentBody.contains("💡"))
+
+        // Headless and empty images are removed
+        assertFalse("Must not contain headless copy button icon", contentBody.contains("code-fence-highlighter-copy-button-icon"))
+        assertFalse("Must not contain headless-img", contentBody.contains("headless-img"))
+
+        // Phantom empty anchors are purged
+        assertFalse("Must not contain phantom # anchor jumps", contentBody.contains("href=\"#\""))
+        assertFalse("Must not contain phantom # anchor jumps (single quote)", contentBody.contains("href='#'"))
+    }
 }

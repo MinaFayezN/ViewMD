@@ -61,18 +61,18 @@ object HtmlExporter {
             .replace(Regex("</body>", RegexOption.IGNORE_CASE), "")
             .trim()
 
-        // Strip IDE-internal command runner elements (run buttons with relative commandRunner/*.png and href="#")
+        // 1. Strip IDE-internal command runner elements (run buttons with relative commandRunner/*.png and href="#")
         sanitizedBody = sanitizedBody
             .replace(Regex("<a\\b[^>]*\\bdata-command=['\"][^'\"]*['\"][^>]*>.*?</a>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)), "")
             .replace(Regex("<a\\b[^>]*class=['\"][^'\"]*run-icon[^'\"]*['\"][^>]*>.*?</a>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)), "")
 
-        // Strip IDE-internal duplicate code fence copy button
+        // 2. Strip IDE-internal duplicate code fence copy button
         sanitizedBody = sanitizedBody
             .replace(Regex("<div\\b[^>]*class=['\"][^'\"]*code-fence-highlighter-copy-button[^'\"]*['\"][^>]*>.*?</div>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)), "")
 
-        // Replace IDE-internal relative alert icons (alertIcons/*.png) with clean standalone emoji badges
+        // 3. Replace IDE-internal relative alert icons (alertIcons/*.png) with clean standalone emoji badges (order-independent)
         sanitizedBody = sanitizedBody
-            .replace(Regex("<img\\b[^>]*class=['\"][^'\"]*markdown-alert-icon[^'\"]*['\"][^>]*src=['\"][^'\"]*alertIcons/([a-zA-Z]+)\\.png['\"][^>]*>", RegexOption.IGNORE_CASE)) { match ->
+            .replace(Regex("<img\\b[^>]*\\bsrc=['\"][^'\"]*alertIcons/([a-zA-Z]+)\\.png['\"][^>]*>", RegexOption.IGNORE_CASE)) { match ->
                 val type = match.groupValues[1].lowercase()
                 val emoji = when (type) {
                     "tip" -> "💡"
@@ -83,6 +83,22 @@ object HtmlExporter {
                 }
                 """<span class="viewmd-alert-icon" style="margin-right: 8px;">$emoji</span>"""
             }
+
+        // 4. Strip any remaining commandRunner image tags
+        sanitizedBody = sanitizedBody
+            .replace(Regex("<img\\b[^>]*\\bsrc=['\"][^'\"]*commandRunner/[^'\"]*['\"][^>]*>", RegexOption.IGNORE_CASE), "")
+
+        // 5. Strip headless <img> tags that lack a genuine src attribute (e.g. <img class="code-fence-highlighter-copy-button-icon">)
+        sanitizedBody = sanitizedBody
+            .replace(Regex("<img\\b(?![^>]*\\s+src\\s*=)[^>]*>", RegexOption.IGNORE_CASE), "")
+
+        // 6. Strip <img> tags with empty or whitespace-only src attribute
+        sanitizedBody = sanitizedBody
+            .replace(Regex("<img\\b[^>]*\\s+src=['\"]\\s*['\"][^>]*>", RegexOption.IGNORE_CASE), "")
+
+        // 7. Strip newly-emptied or phantom <a href="#"> links that have no textual content
+        sanitizedBody = sanitizedBody
+            .replace(Regex("<a\\b[^>]*\\bhref=['\"]#['\"][^>]*>\\s*</a>", RegexOption.IGNORE_CASE), "")
 
         return """
         <!doctype html>

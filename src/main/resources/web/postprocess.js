@@ -559,8 +559,8 @@
       document.querySelectorAll('.code-fence-highlighter-copy-button').forEach((el) => el.remove());
     }
 
-    // 3. Neutralize broken alert icons pointing to relative alertIcons/*.png
-    document.querySelectorAll('img.markdown-alert-icon').forEach((img) => {
+    // 3. Neutralize broken alert icons pointing to relative alertIcons/*.png (order-independent)
+    document.querySelectorAll('img.markdown-alert-icon, img[src*="alertIcons/"]').forEach((img) => {
       const src = img.getAttribute('src') || '';
       if (src.includes('alertIcons/')) {
         const match = src.match(/alertIcons\/([a-zA-Z]+)\.png/i);
@@ -581,6 +581,18 @@
         parentLink.remove();
       } else {
         img.remove();
+      }
+    });
+
+    // 5. Strip all headless <img> elements (missing src, empty src, or copy button icons)
+    document.querySelectorAll('img:not([src]), img[src=""], img.code-fence-highlighter-copy-button-icon').forEach((el) => {
+      el.remove();
+    });
+
+    // 6. Prune any orphaned <a href="#"> links that contain no text and no remaining element children
+    document.querySelectorAll('a[href="#"]').forEach((el) => {
+      if (!el.textContent.trim() && el.children.length === 0) {
+        el.remove();
       }
     });
   }

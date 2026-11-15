@@ -236,6 +236,22 @@ flowchart LR
           </p>
           <p>This is a warning</p>
         </blockquote>
+
+        <!-- Inverted attribute order on alert icon -->
+        <blockquote class="markdown-alert markdown-alert-note">
+          <p class="markdown-alert-title">
+            <img src="alertIcons/note.png" class="markdown-alert-icon" alt="">Note with inverted attributes
+          </p>
+          <p>Note content</p>
+        </blockquote>
+
+        <!-- Headless images and empty anchor jumps -->
+        <p>
+          <a href="#"><img class="code-fence-highlighter-copy-button-icon"></a>
+          <img src="" alt="empty">
+          <img alt="headless">
+          <a href="#">   </a>
+        </p>
       </article>
     `);
 
@@ -267,5 +283,17 @@ flowchart LR
     const warningBadge = page.locator('.markdown-alert-warning .viewmd-alert-icon');
     await expect(warningBadge).toBeVisible();
     await expect(warningBadge).toContainText('⚠️');
+
+    const noteBadge = page.locator('.markdown-alert-note .viewmd-alert-icon');
+    await expect(noteBadge).toBeVisible();
+    await expect(noteBadge).toContainText('ℹ️');
+
+    // 5. Assert all headless images are stripped
+    const headlessImgs = page.locator('img:not([src]), img[src=""]');
+    await expect(headlessImgs).toHaveCount(0);
+
+    // 6. Assert zero empty/phantom <a href="#"> links remain
+    const emptyAnchors = page.locator('a[href="#"]');
+    await expect(emptyAnchors).toHaveCount(0);
   });
 });
