@@ -62,3 +62,9 @@ Bob --> Alice: Success
 Right-click anywhere in a Markdown file to access the **ViewMD** context menu:
 - **Open Preview in Browser**: Creates a standalone temporary HTML page and launches your system browser.
 - **Export as HTML...**: Saves a self-contained HTML document with inlined offline styles and diagram renderers.
+
+## 7. IDE Integration & External Browser Cleanliness
+
+- **IntelliJ IDEA Command Runner**: In IntelliJ IDEA, runnable code blocks (`bash`, `sh`, etc.) can execute directly inside the IDE's Terminal via IntelliJ's native gutter/preview runner.
+- **Zero Broken Artifacts in Browsers**: When using **Open Preview in Browser** or **Export as HTML...**, IDE-specific execution anchors, internal relative image assets (`commandRunner/*.png`, `alertIcons/*.png`), and duplicate buttons are automatically sanitized into clean, self-contained HTML. Exported documents never show broken image icons or dead `#` anchor jumps.
+

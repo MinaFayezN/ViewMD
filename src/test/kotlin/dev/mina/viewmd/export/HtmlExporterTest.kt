@@ -100,4 +100,33 @@ class HtmlExporterTest {
         assertTrue(html.contains("&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"))
         assertFalse(html.contains("<title><script>"))
     }
+
+    @Test
+    fun testGenerateStandaloneHtmlStripsIdeRunnerArtifactsAndSanitizesAlertIcons() {
+        val bodyWithIdeArtifacts = """
+            <pre class="code-fence"><a class='run-icon code-block' href='#' role='button' data-command='Run:echo 123'><img src='commandRunner/run.png'></a><div class="code-fence-highlighter-copy-button"><img class="code-fence-highlighter-copy-button-icon"></div><code class="language-bash">echo 123</code></pre>
+            <blockquote class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><img class="markdown-alert-icon" src="alertIcons/note.png" alt="">Note</p><p>Alert note text</p></blockquote>
+        """.trimIndent()
+
+        val html = HtmlExporter.generateStandaloneHtml(
+            title = "IDE Artifacts Cleanup Test",
+            bodyHtml = bodyWithIdeArtifacts,
+            project = null,
+            isDark = false
+        )
+
+        // 1. Broken commandRunner run anchor must be completely stripped
+        assertFalse(html.contains("commandRunner/run.png"))
+        assertFalse(html.contains("data-command="))
+        assertFalse(html.contains("class='run-icon"))
+
+        // 2. Broken duplicate copy button from IDE must be stripped from content
+        val contentBody = html.substringAfter("<div class=\"viewmd-content\">").substringBefore("</div>")
+        assertFalse(contentBody.contains("code-fence-highlighter-copy-button"))
+
+        // 3. Relative alertIcons/note.png must be replaced with standalone icon badge
+        assertFalse(contentBody.contains("alertIcons/note.png"))
+        assertTrue(contentBody.contains("viewmd-alert-icon"))
+        assertTrue(contentBody.contains("ℹ️"))
+    }
 }

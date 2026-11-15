@@ -73,18 +73,34 @@ class ExportHtmlActionTest : BasePlatformTestCase() {
         assertFalse(event.presentation.isEnabledAndVisible)
     }
 
-    fun testFindAnchorOrImageGenerators() {
-        val cl = org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil::class.java.classLoader
-        try {
-            val runnerClass = Class.forName("org.intellij.plugins.markdown.extensions.jcef.commandRunner.CommandRunnerExtension", true, cl)
-            val constructor = runnerClass.constructors.first()
-            // Try instantiating with dummy panel or finding what getHtmlForLineRunner returns
-            val m = runnerClass.getDeclaredMethod("getHtmlForLineRunner", Boolean::class.javaPrimitiveType, String::class.java)
-            m.isAccessible = true
-            // CommandRunnerExtension needs a MarkdownHtmlPanel. Let's see if we can instantiate it or inspect bytecode/decompiled info
-            println("METHOD_FOUND: $m")
-        } catch (e: Throwable) {
-            println("RUNNER_CLASS error: $e")
-        }
+    fun testExportHtmlCleansCommandRunnerAndAlertArtifacts() {
+        val psiFile = myFixture.configureByText("script.md", """
+            # Command Run
+            
+            ```bash
+            echo "hello viewmd"
+            ```
+            
+            > [!NOTE]
+            > This is an alert note
+        """.trimIndent())
+
+        val rawMarkdown = psiFile.text
+        val renderedBody = org.intellij.plugins.markdown.ui.preview.html.MarkdownUtil.generateMarkdownHtml(
+            psiFile.virtualFile,
+            rawMarkdown,
+            project
+        )
+        val standaloneHtml = dev.mina.viewmd.export.HtmlExporter.generateStandaloneHtml(
+            title = psiFile.name,
+            bodyHtml = renderedBody,
+            project = project,
+            isDark = false
+        )
+
+        val contentBody = standaloneHtml.substringAfter("<div class=\"viewmd-content\">").substringBefore("</div>")
+        assertFalse("Must not contain broken commandRunner links in content", contentBody.contains("commandRunner/"))
+        assertFalse("Must not contain broken alertIcons image tags in content", contentBody.contains("alertIcons/"))
+        assertTrue("Must contain sanitized alert icon badge in content", contentBody.contains("viewmd-alert-icon"))
     }
 }

@@ -550,7 +550,43 @@
     }).join('\n');
   }
 
+  function cleanExternalBrowserArtifacts() {
+    const isExternalBrowser = typeof window.__IntelliJTools === 'undefined';
+    if (isExternalBrowser) {
+      // 1. Remove IDE command runner links that scroll to # with broken images
+      document.querySelectorAll('a[data-command], a.run-icon, a.run-icon-line').forEach((el) => el.remove());
+      // 2. Remove duplicate/broken IDE copy buttons
+      document.querySelectorAll('.code-fence-highlighter-copy-button').forEach((el) => el.remove());
+    }
+
+    // 3. Neutralize broken alert icons pointing to relative alertIcons/*.png
+    document.querySelectorAll('img.markdown-alert-icon').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      if (src.includes('alertIcons/')) {
+        const match = src.match(/alertIcons\/([a-zA-Z]+)\.png/i);
+        const type = match ? match[1].toLowerCase() : 'note';
+        const emojiMap = { note: 'ℹ️', tip: '💡', important: '❗', warning: '⚠️', caution: '🛑' };
+        const span = document.createElement('span');
+        span.className = 'viewmd-alert-icon';
+        span.style.marginRight = '8px';
+        span.textContent = emojiMap[type] || 'ℹ️';
+        img.parentNode.replaceChild(span, img);
+      }
+    });
+
+    // 4. Remove any commandRunner images or broken images inside anchors
+    document.querySelectorAll('img[src*="commandRunner/"]').forEach((img) => {
+      const parentLink = img.closest('a');
+      if (parentLink && (parentLink.getAttribute('href') === '#' || parentLink.hasAttribute('data-command'))) {
+        parentLink.remove();
+      } else {
+        img.remove();
+      }
+    });
+  }
+
   function run() {
+    cleanExternalBrowserArtifacts();
     initThemeToggle();
     wrapTables();
     enhanceFrontMatter();
@@ -570,6 +606,7 @@
     if (debounceTimer) return;
     debounceTimer = setTimeout(() => {
       debounceTimer = null;
+      cleanExternalBrowserArtifacts();
       initThemeToggle();
       wrapTables();
       renderMermaidDiagrams();

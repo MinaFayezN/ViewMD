@@ -5,8 +5,17 @@
     <vendor email="MinaFayezN@gmail.com" url="https://github.com/mina/ViewMD">dev.mina</vendor>
 
     <description><![CDATA[
-        <p><b>ViewMD</b> delivers a cleaner, smarter Markdown preview for Android Studio and IntelliJ-based IDEs.</p>
-        <p>Tired of squeezed tables wrapping text one letter per line or missing offline diagram renderers? ViewMD fixes markdown rendering friction with responsive layouts and offline-first tools.</p>
+        <p><b>ViewMD</b> delivers a cleaner, smarter Markdown preview for <b>IntelliJ IDEA</b>, <b>Android Studio</b>, and IntelliJ-based IDEs.</p>
+        <p>Tired of squeezed tables wrapping text one letter per line, broken diagrams, or missing offline renderers? ViewMD fixes markdown rendering friction with responsive layouts and offline-first tools.</p>
+
+        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/demo.gif" width="600" alt="ViewMD Interactive Demo"></p>
+
+        <h3>Supported IDEs</h3>
+        <ul>
+            <li><b>IntelliJ IDEA</b>: 2026.2+ (Community & Ultimate)</li>
+            <li><b>Android Studio</b>: 2026.2+ (Ladybug, Meerkat, and newer)</li>
+        </ul>
+
         <h3>Key Features</h3>
         <ul>
             <li><b>Responsive Table Scrolling</b>: Wide tables scroll horizontally inside an overflow container with sticky headers, zebra striping, and readable column widths — no more squeezed columns.</li>
@@ -17,6 +26,9 @@
             <li><b>Dynamic Theme Switching</b>: Seamlessly adapts to light, dark, and high-contrast IDE themes.</li>
             <li><b>Export & Sharing</b>: One-click "Open in Browser" and "Export as HTML" with bundled inlined styles.</li>
         </ul>
+
+        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/responsive-table-toolbar.png" width="600" alt="Responsive Table Toolbar"></p>
+        <p><img src="https://raw.githubusercontent.com/mina/ViewMD/main/docs/images/dark-theme-preview.png" width="600" alt="Dark Theme Preview"></p>
     ]]></description>
 
     <change-notes><![CDATA[

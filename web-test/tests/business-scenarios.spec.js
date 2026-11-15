@@ -204,4 +204,68 @@ flowchart LR
     const fatalErrors = consoleErrors.filter(e => !e.includes('net::ERR_FILE_NOT_FOUND') && !e.includes('CompletionHandlerException'));
     expect(fatalErrors).toHaveLength(0);
   });
+
+  test('Scenario 4: IntelliJ IDEA command runner anchors and alert quote icons clean up without broken images or # jumps', async ({ page }) => {
+    const rawHtml = buildHtml(`
+      <article>
+        <h1>Code & Quotes with IDE Artifacts</h1>
+
+        <!-- Code fence with IntelliJ IDEA command runner and duplicate copy button -->
+        <pre class="code-fence">
+          <a class="run-icon code-block" href="#" role="button" data-command="Run:echo test">
+            <img src="commandRunner/run.png">
+          </a>
+          <div class="code-fence-highlighter-copy-button" data-fence-content="ZWNobyB0ZXN0">
+            <img class="code-fence-highlighter-copy-button-icon">
+            <span class="tooltiptext">Copy to clipboard</span>
+          </div>
+          <code class="language-bash">echo test</code>
+        </pre>
+
+        <!-- Markdown alert quote with relative IntelliJ alert icon -->
+        <blockquote class="markdown-alert markdown-alert-tip">
+          <p class="markdown-alert-title">
+            <img class="markdown-alert-icon" src="alertIcons/tip.png" alt="">Tip
+          </p>
+          <p>This is a helpful tip</p>
+        </blockquote>
+
+        <blockquote class="markdown-alert markdown-alert-warning">
+          <p class="markdown-alert-title">
+            <img class="markdown-alert-icon" src="alertIcons/warning.png" alt="">Warning
+          </p>
+          <p>This is a warning</p>
+        </blockquote>
+      </article>
+    `);
+
+    await loadHtml(page, rawHtml);
+
+    // 1. Assert broken IntelliJ command runner links are completely removed
+    const runnerLinks = page.locator('a[data-command], a.run-icon');
+    await expect(runnerLinks).toHaveCount(0);
+
+    // 2. Assert broken commandRunner and copy-button image tags are removed
+    const brokenRunnerImgs = page.locator('img[src*="commandRunner"]');
+    await expect(brokenRunnerImgs).toHaveCount(0);
+
+    const duplicateCopyDivs = page.locator('.code-fence-highlighter-copy-button');
+    await expect(duplicateCopyDivs).toHaveCount(0);
+
+    // 3. Assert ViewMD copy button is present and functional
+    const viewmdCopyBtn = page.locator('.viewmd-copy-btn');
+    await expect(viewmdCopyBtn).toBeVisible();
+
+    // 4. Assert relative alert images are replaced with clean icon badges
+    const brokenAlertImgs = page.locator('img[src*="alertIcons"]');
+    await expect(brokenAlertImgs).toHaveCount(0);
+
+    const tipBadge = page.locator('.markdown-alert-tip .viewmd-alert-icon');
+    await expect(tipBadge).toBeVisible();
+    await expect(tipBadge).toContainText('💡');
+
+    const warningBadge = page.locator('.markdown-alert-warning .viewmd-alert-icon');
+    await expect(warningBadge).toBeVisible();
+    await expect(warningBadge).toContainText('⚠️');
+  });
 });
