@@ -20,5 +20,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Custom CSS Engine & Diagnostics**: Settings panel resolving absolute, home tilde (`~`), and project-relative paths with real-time status reporting and live hot-reload via Virtual File System events.
 - **Live IDE Theme Synchronization**: Seamless real-time theme adaptation matching Light, Dark, Darcula, and High Contrast schemes via `LafManagerListener`.
 - **Standalone Document Export**: One-click "Open Preview in Browser" and "Export as HTML..." generating self-contained single-file HTML pages with inlined styles and scripts.
-- **Automated Regression Suite**: 68 Kotlin unit & platform tests, 29 Playwright E2E browser tests, and 6-viewport visual torture tests guaranteeing zero layout blow-out.
+- **Automated Regression Suite**: 70 Kotlin unit & platform tests, 29 Playwright E2E browser tests, and 6-viewport visual torture tests guaranteeing zero layout blow-out.
 - **License**: Released under the GNU General Public License v3.0 (GPLv3).

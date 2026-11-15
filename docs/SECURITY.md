@@ -15,6 +15,13 @@ triggers: [security, CSP, XSS protection, reporting vulnerabilities]
 6. **Custom CSS Boundary Validation**: User stylesheets must possess a `.css` extension, verify as regular files under 5MB, and resolve canonical symlinks securely.
 7. **HTML Sanitization & Export Isolation**: Document titles are HTML entity-encoded, and user-provided stylesheets are neutralized against `</style>` tag breakout vectors in exported standalone documents.
 
-## Reporting Vulnerabilities
+## Reporting a Vulnerability
 
-If you identify a security issue, please contact the maintainers directly at `security@mina.dev` instead of filing public issue tickets.
+We take the security of ViewMD seriously. If you discover a vulnerability or security risk, please **do not open a public GitHub issue**.
+
+Instead, please report it via one of the following private channels:
+
+1. **GitHub Private Vulnerability Advisory**: Submit a private report at [https://github.com/MinaFayezN/ViewMD/security/advisories/new](https://github.com/MinaFayezN/ViewMD/security/advisories/new).
+2. **Email**: Contact the maintainers directly at `security@mina.dev`.
+
+Please include detailed reproduction steps, affected environment versions, and potential impact. We will acknowledge receipt within 48 hours and work with you on a coordinated fix and release before public disclosure.

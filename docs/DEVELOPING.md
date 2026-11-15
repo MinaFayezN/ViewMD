@@ -32,7 +32,7 @@ Distribution archive will be generated at `build/distributions/ViewMD-1.0.0.zip`
 
 ## Running Tests
 
-### Kotlin Unit & Platform Tests (68 tests)
+### Kotlin Unit & Platform Tests (70 tests)
 ```bash
 ./gradlew test
 ```

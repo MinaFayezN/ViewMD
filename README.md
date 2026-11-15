@@ -4,6 +4,9 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](CHANGELOG.md)
+[![Test Suite](https://github.com/MinaFayezN/ViewMD/actions/workflows/test.yml/badge.svg)](https://github.com/MinaFayezN/ViewMD/actions/workflows/test.yml)
+[![Build](https://github.com/MinaFayezN/ViewMD/actions/workflows/build.yml/badge.svg)](https://github.com/MinaFayezN/ViewMD/actions/workflows/build.yml)
+[![Security Policy](https://img.shields.io/badge/security-policy-blue.svg)](.github/SECURITY.md)
 
 ![ViewMD Interactive Demo](docs/images/demo.gif)
 
@@ -91,7 +94,7 @@ Navigate to `Settings > Tools > ViewMD`:
 
 ViewMD maintains an uncompromising **Automated Regression Testing Mandate**: every bug fix, user feedback item, security mitigation, and UI change is covered by dedicated automated tests.
 
-- **Kotlin Unit & Platform Tests**: 68 tests verifying AST manipulation, CSS resolving, settings state persistence, front matter parsing, PlantUML offline rendering, and HTML export.
+- **Kotlin Unit & Platform Tests**: 70 tests verifying AST manipulation, CSS resolving, settings state persistence, front matter parsing, PlantUML offline rendering, and HTML export.
 - **Playwright E2E Browser Suite**: 29 tests verifying table wrapping, Markdown/TSV clipboard exports, front matter transformation, offline Mermaid diagram rendering, live settings IPC, and prototype pollution defenses.
 - **Visual Torture Test**: 6 multi-viewport automated checks (400px, 900px, 1600px across Light and Dark themes) guaranteeing zero horizontal document blow-out.
 
