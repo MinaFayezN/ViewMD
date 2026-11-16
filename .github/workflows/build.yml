@@ -184,6 +184,13 @@ jobs:
             --jq '.[] | select(.draft == true) | .id' \
             | xargs -r -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{}
 
+      # Download the built plugin distribution artifact from the build job
+      - name: Download Plugin Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-distribution
+          path: ./build/distributions
+
       # Create a new release draft which is not publicly visible and requires manual acceptance
       - name: Create Release Draft
         env:
@@ -196,4 +203,5 @@ jobs:
           gh release create $VERSION \
             --draft \
             --title $VERSION \
-            --notes-file $RELEASE_NOTE
+            --notes-file $RELEASE_NOTE \
+            ./build/distributions/*
