@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-11-21
+
+### Added
+- **Android Studio JCEF Decoupling**: Declared `com.intellij.modules.jcef` as an optional dependency (`viewmd-jcef.xml`), allowing ViewMD to install and run cleanly on Android Studio builds lacking bundled JCEF (such as Rabbit 2).
+- **Core Offline Diagrams in Non-JCEF Environments**: Mermaid and PlantUML diagram code fence generators remain active out-of-the-box regardless of whether the JCEF browser runtime is present.
+- **Defensive API Reflection Guards**: Replaced experimental/internal JCEF panel calls (`getProject()`, `getBrowserPipe()`, `runJavaScript()`) with safe reflection fallbacks to guarantee cross-IDE forward compatibility across 2026.2 and 2026.3 EAP.
+
 ## [1.0.0] - 2026-11-15
 
 ### Added

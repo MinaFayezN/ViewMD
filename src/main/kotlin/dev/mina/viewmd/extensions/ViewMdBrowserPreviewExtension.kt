@@ -61,7 +61,7 @@ class ViewMdBrowserPreviewExtension(
         }
     }
 
-    private val cssWatcher = CssWatcher(panel.project, this) { path ->
+    private val cssWatcher = CssWatcher(resolvePanelProject(panel), this) { path ->
         reloadCustomCss(path)
     }
 
@@ -98,7 +98,8 @@ class ViewMdBrowserPreviewExtension(
         val fontFamStr = settings.fontFamily.replace("\"", "\\\"")
 
         // Handle custom CSS resolution
-        val status = CssResolver.resolve(settings.customCssPath, panel.project)
+        val project = resolvePanelProject(panel)
+        val status = CssResolver.resolve(settings.customCssPath, project)
         val customCssContent = if (status is CssStatus.Valid) {
             cssWatcher.setWatchedPath(status.path)
             try {
@@ -154,11 +155,29 @@ class ViewMdBrowserPreviewExtension(
             logger.debug("Reflection runJavaScript call omitted", e)
         }
 
-        // Also broadcast via BrowserPipe
+        // Also broadcast via BrowserPipe if available
         try {
-            panel.browserPipe?.send("viewmd:event", jsonPayload)
+            val pipeMethod = panel.javaClass.methods.firstOrNull { it.name == "getBrowserPipe" && it.parameterCount == 0 }
+            val pipe = pipeMethod?.invoke(panel)
+            if (pipe != null) {
+                val sendMethod = pipe.javaClass.methods.firstOrNull { it.name == "send" && it.parameterCount == 2 }
+                sendMethod?.invoke(pipe, "viewmd:event", jsonPayload)
+            }
         } catch (e: Throwable) {
-            logger.debug("BrowserPipe send failed", e)
+            logger.debug("BrowserPipe send omitted/failed", e)
+        }
+    }
+
+    private fun resolvePanelProject(targetPanel: MarkdownHtmlPanel): com.intellij.openapi.project.Project? {
+        return try {
+            val method = targetPanel.javaClass.methods.firstOrNull { it.name == "getProject" && it.parameterCount == 0 }
+            if (method != null) {
+                method.invoke(targetPanel) as? com.intellij.openapi.project.Project
+            } else {
+                com.intellij.openapi.project.ProjectManager.getInstance().openProjects.firstOrNull()
+            }
+        } catch (e: Throwable) {
+            com.intellij.openapi.project.ProjectManager.getInstance().openProjects.firstOrNull()
         }
     }
 

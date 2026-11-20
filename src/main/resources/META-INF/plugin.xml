@@ -49,6 +49,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.intellij.plugins.markdown</depends>
+    <depends optional="true" config-file="viewmd-jcef.xml">com.intellij.modules.jcef</depends>
 
     <actions>
         <group id="ViewMD.ActionsGroup" text="ViewMD" popup="true">
@@ -76,7 +77,6 @@
     </extensions>
 
     <extensions defaultExtensionNs="org.intellij.markdown">
-        <browserPreviewExtensionProvider implementation="dev.mina.viewmd.extensions.ViewMdBrowserPreviewExtension$Provider" />
         <fenceGeneratingProvider implementation="dev.mina.viewmd.diagram.MermaidCodeFenceGeneratingProvider" order="first" />
         <fenceGeneratingProvider implementation="dev.mina.viewmd.diagram.PlantUmlCodeFenceGeneratingProvider" order="first" />
     </extensions>
