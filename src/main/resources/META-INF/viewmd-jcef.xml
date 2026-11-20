@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="org.intellij.markdown">
+        <browserPreviewExtensionProvider implementation="dev.mina.viewmd.extensions.ViewMdBrowserPreviewExtension$Provider" />
+    </extensions>
+</idea-plugin>
